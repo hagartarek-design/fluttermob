@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "60396017051",
+    "project_id": "student-51d79",
+    "storage_bucket": "student-51d79.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:60396017051:android:25990e49397d7a46c7bd3e",
+        "android_client_info": {
+          "package_name": "com.ashtar.my_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "60396017051-75mv0dg1rtgv3jfp4j0idjkgrgp2830s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ashtar.my_app",
+            "certificate_hash": "6f01018dde53440f9220fa129fcdbc6bfb451e0c"
+          }
+        },
+        {
+          "client_id": "60396017051-ovco36t7lqfhu87k83c7g6et3nf4bjpl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVbTiBrQLOZHhYsYOfvfXZrLcgzcudtBg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "60396017051-ovco36t7lqfhu87k83c7g6et3nf4bjpl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "60396017051-op47ft87t3benr2m7enscr1uuphsdoe5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ashtar.myApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

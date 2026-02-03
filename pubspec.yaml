@@ -1,0 +1,170 @@
+name: my_app
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.6.1 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  get: ^4.7.2
+  intl_phone_field: ^3.2.0
+  country_picker: ^2.0.27
+  country_pickers: ^3.0.1
+  google_sign_in: ^6.1.5
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.0
+  flutter_facebook_auth: ^7.1.2
+  shared_preferences: ^2.5.3
+  custom_mouse_cursor: ^1.1.3
+  google_fonts: ^6.2.1
+  signature: ^6.3.0
+  material_symbols_icons: ^4.2815.1
+  percent_indicator: ^4.2.5
+  video_player: ^2.10.0
+  chewie: ^1.11.3
+  syncfusion_flutter_pdfviewer: 31.1.23  # بدون ^
+  flutter_cache_manager: ^3.4.1
+  pdf: ^3.11.3
+  printing: ^5.13.1
+  fl_chart: ^1.1.1
+  intl: ^0.19.0
+  flutter_timer_countdown: ^1.0.7
+  flutter_social_button: ^1.1.6+1
+  font_awesome_flutter: ^10.9.1
+  translator: ^1.0.4+1
+  google_translate: ^0.0.3
+  flutter_translate: ^4.1.0
+  media_kit: ^1.2.3
+  media_kit_video: ^2.0.1
+  media_kit_libs_android_video: ^1.3.8
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+flutter:
+  # uses-material-design: true
+  assets:
+    - assets/
+    - icons/
+# flutter:
+#   uses-material-design: true
+#   assets:
+#     - assets/sign up 22 1.png
+#     - assets/logo 1.png
+#     - assets/Google@2x (1).png
+#     - assets/facebook circle.png
+#     - assets/ashtar.png
+#     - assets/log in 2.png
+#     - assets/Group 87935.png
+#     - assets/forgot password 1.png
+#     - assets/teachers cover.png
+#     - assets/Frame (10).png
+#     - assets/1st sec.@2x.png
+#     - assets/2nd sec. .png
+#     - assets/thumb 4.png
+#     - assets/3rd sec. 2.png
+#     - icons/Group.png
+#     - icons/Component 232 (2).png
+#     - icons/Frame (11).png
+#     - icons/Frame (12).png
+#     - icons/Frame (13).png
+#     - icons/Frame (14).png
+#     - icons/Frame (15).png
+#     - icons/Frame (16).png
+#     - icons/location.png
+#     - icons/Phone.png
+#     - icons/sms (1).png
+#     - icons/Vector.png
+#     - icons/Vector (2).png
+#     - icons/Vector (3).png
+#     - icons/Component 222.png
+#     - assets/use1.png
+#     - assets/use2.png
+#     - assets/use3.png
+#     - assets/use4.png
+#     - assets/use5.png
+#     - assets/use6.png
+#     - assets/use7.png
+#     - assets/Frame 1597882438 (2).png
+#     - assets/Frame 1597882438 (1).png
+#     - assets/Frame 1597882438 (3).png
+#     - assets/Frame 1597882438 (4).png
+#     - assets/Frame 1597882438 (5).png
+#     - assets/Frame 1597882438.png
+#     - assets/Frame 1597882438@2x.png
+#     - assets/lecturecard.png
+#     - assets/bocket.png
+#     - assets/Frame (17).png
+#     - assets/Icon_21_.png
+#     - assets/Group 23576.png
+#     - assets/Frame 203.png
+#     - assets/Group 87970.png
+#     - assets/Frame1597882438(6).png
+#     - assets/Frame1597882438(7).png
+#     - assets/video-play.png
+#     - assets/Question.png
+#     - assets/Question (1).png
+#     - assets/icons.png
+#     - assets/icons (1).png
+#     - assets/Group@2x.png
+#     - assets/arrowleft.png
+#     - assets/Group (12).png
+#     - assets/Group (10).png
+#     - assets/Frame 1597882438 (8).png
+#     - assets/document-text.png
+#     - assets/malazm.jpg
+#     - assets/Component 233.png
+#     - icons/Component9232.png
+#     - icons/blue.png
+#     # - icons/Component 232.png
+#     - assets/Component 232 (1).png
+#     - assets/Component 234.png
+#     - assets/Group (1).png
+#     - assets/Group.png
+#     - assets/Frame.png
+#     - assets/schedule.png
+#     - assets/Frame (1).png
+#     - assets/Frame 1597883100.png
+#     - assets/Frame 1597883113.png
+#     - assets/Frame 1597883114.png
+#     - assets/Frame 1597883116.png
+#     - assets/OIP 1.png
+#     - assets/p-image.jpg
+#     - assets/logo ashtar withe phase 2 (2).png
+#     - assets/ash7en ma7faztak 1.png
+#     - assets/Vector.png
+#     - assets/wallet Card 2.png
+#     - assets/Icon.png
+#     - assets/Vector (2).png
+#     - assets/empty-wallet-change.png
+#     - assets/Group (3).png
+#     - assets/mlazm 2@2x.png
+#     - assets/Ellipse 1.png
+#     - assets/lecture card 1.png
+#     - assets/mlazm.png
+#     - assets/eg-ar-phy-g10-t1-cover 1.png
+#     - assets/clock.png
+#     - assets/close-square.png
+#     - assets/Frame2.png
+#     - assets/Group23.png
+#     - assets/Group2.png
+#     - assets/Frame12.png
+#     - assets/1.png
+#     - assets/2.png
+#     - assets/3.png
+#     - assets/4.png
+#     - assets/5.png
+#     - assets/wrong.png
+#     - assets/right.png
+#     - assets/Frame 1597883416.png
+#     - assets/Frame 1597883415 (1).png
+#     - assets/Frame 1597883415.png
+#     - assets/ashtarlogo.png
+#     - assets/bigright.png
+#     - assets/emptycard.png
+#     - assets/Frame (3).png
