@@ -75,7 +75,7 @@ var g=controller.course_info.map((e)=>e.section?.length);
               
               Row(
                 children: [
-              Image.asset('assets/Group 87935.png', width: 55),
+              Image.asset('assets/Group87935.png', width: 55),
                 ],
               ),
             ],
@@ -104,8 +104,8 @@ var g=controller.course_info.map((e)=>e.section?.length);
                           
                         ),
                       ),
-                    Image.asset('icons/Vector (3).png',width: 40,height: 41,),
-                    Image.asset('icons/Vector (2).png',width: 39.02,height: 40,)
+                    Image.asset('icons/Vector_3.png',width: 40,height: 41,),
+                    Image.asset('icons/Vector_2.png',width: 39.02,height: 40,)
                     
                     
                     
@@ -122,7 +122,7 @@ var g=controller.course_info.map((e)=>e.section?.length);
                       _navText('ذاكر'),
                       _navText('الرئيسية', highlight: true),
                       const SizedBox(width: 12),
-                      Image.asset('assets/Group 87935.png', width: 55),
+                      Image.asset('assets/Group87935.png', width: 55),
                     ],
                   ),
               ],
@@ -590,7 +590,7 @@ Column(
     ,Column(
   crossAxisAlignment: CrossAxisAlignment.center
   ,mainAxisAlignment: MainAxisAlignment.center,
-  children: [Image.asset("assets/Frame (3).png",width: 249,height: 246,)],),
+  children: [Image.asset("assets/Frame_3.png",width: 249,height: 246,)],),
   Wrap(
     alignment: WrapAlignment.center,
     children: [ Text('مفيش طلب ليك دلوقتي',style: TextStyle(
@@ -1392,7 +1392,7 @@ Widget _buildFooter(BuildContext context) {
                       const SizedBox(height: 12),
                       _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
                       const SizedBox(height: 12),
-                      _buildInfoRow('icons/sms (1).png', 'support@ashtar.app'),
+                      _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
                       const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -1455,7 +1455,7 @@ Widget _buildFooter(BuildContext context) {
                       Align(
                         alignment: Alignment.centerRight,
                         child: Image.asset(
-                          'assets/Group 87935.png',
+                          'assets/Group87935.png',
                           width: 80,
                           height: 65.7,
                         ),

@@ -97,7 +97,7 @@ initialPage: 1
               
               Row(
                 children: [
-              Image.asset('assets/Group 87935.png', width: 55),
+              Image.asset('assets/Group87935.png', width: 55),
                 ],
               ),
             ],
@@ -165,8 +165,8 @@ initialPage: 1
                           
                         ),
                       ),
-                    Image.asset('icons/Vector (3).png',width: 40,height: 41,),
-                    Image.asset('icons/Vector (2).png',width: 39.02,height: 40,)
+                    Image.asset('icons/Vector_3.png',width: 40,height: 41,),
+                    Image.asset('icons/Vector_2.png',width: 39.02,height: 40,)
                     
                   
                   ],
@@ -182,7 +182,7 @@ initialPage: 1
                       _navText('ذاكر'),
                       _navText('الرئيسية', highlight: true),
                       const SizedBox(width: 12),
-                      Image.asset('assets/Group 87935.png', width: 55),
+                      Image.asset('assets/Group87935.png', width: 55),
                     ],
                   ),
               ],
@@ -366,7 +366,7 @@ SizedBox(
       Container(child: Row(children: [
         Text('ممتاز',style: TextStyle(fontWeight:FontWeight.w600
         ,fontSize:isMobile?16: 24,color: Color.fromARGB(255, 6, 69, 152)),)
-        ,Image.asset('assets/Frame (1).png',width:isMobile?30: 64,height:isMobile?30 :64,)
+        ,Image.asset('assets/Frame_1.png',width:isMobile?30: 64,height:isMobile?30 :64,)
         
         ],),)
       ,
@@ -764,7 +764,7 @@ width: !isMobile?1120:screenWidth,      padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Image.asset('assets/Frame (10).png', width: 43, height: 40),
+          Image.asset('assets/Frame_10.png', width: 43, height: 40),
           const SizedBox(height: 10),
           const Text(
             'الأستاذ شريف البدري',
@@ -896,7 +896,7 @@ Widget _buildFooter(BuildContext context) {
                       Align(
                         alignment: Alignment.centerRight,
                         child: Image.asset(
-                          'assets/Group 87935.png',
+                          'assets/Group87935.png',
                           width: 80,
                           height: 65.7,
                         ),

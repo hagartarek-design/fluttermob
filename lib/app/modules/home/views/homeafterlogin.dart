@@ -235,7 +235,7 @@ initialPage: 1
               runSpacing: 16,
               alignment: WrapAlignment.center,
               children: [
-              InkWell(child: _buildClassCard('احجز ملازمك', 'assets/1st sec.@2x.png',context) ,onTap: (){
+              InkWell(child: _buildClassCard('احجز ملازمك', 'assets/1stsec2x.png',context) ,onTap: (){
 
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>subjectBooks2()));
               },) ,
@@ -245,7 +245,7 @@ initialPage: 1
                     return ExamresultAnswerSheet(lessonIds: 1,);
                   }));
                 },
-                child:   _buildClassCard('المحضرات المباشرة', 'assets/2nd sec. .png',context),),
+                child:   _buildClassCard('المحضرات المباشرة', 'assets/2ndsec.png',context),),
             InkWell(child:  _buildClassCard('شوف محضراتك', 'assets/use7.png',context) ,onTap: (){
               Navigator.push(context, MaterialPageRoute(builder:( context){
 return Subjectbooks();
@@ -260,7 +260,7 @@ return Subjectbooks();
               alignment: WrapAlignment.end,
               children: [
           InkWell(child: 
-            _buildClassCard('احجز امنحنات الشامل', 'assets/1st sec.@2x.png',context),
+            _buildClassCard('احجز امنحنات الشامل', 'assets/1stsec2x.png',context),
           onTap: (){
             Navigator.push(context, MaterialPageRoute(builder: (context){
               return SchudleForTheExam();
@@ -269,7 +269,7 @@ return Subjectbooks();
           ) ,   
            InkWell( onTap: (){
 
-           Navigator.push(context, MaterialPageRoute(builder: (context){return schedule_center();})); } ,child: _buildClassCard( 'احجز السنتر', 'assets/2nd sec. .png',context ), )    
+           Navigator.push(context, MaterialPageRoute(builder: (context){return schedule_center();})); } ,child: _buildClassCard( 'احجز السنتر', 'assets/2ndsec.png',context ), )    
               ],
             ),  const SizedBox(height: 20),
             

@@ -489,11 +489,11 @@ Container(
       Expanded(
         child: Row(
           children: [
-            Image.asset(
-              'assets/استرجاع.png',
-              width: 32,
-              height: 32,
-            ),
+            // Image.asset(
+            //   'assets/استرجاع.png',
+            //   width: 32,
+            //   height: 32,
+            // ),
             const SizedBox(width: 8),
             Expanded(
               child: Column(

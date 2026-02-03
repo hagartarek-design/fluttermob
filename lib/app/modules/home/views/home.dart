@@ -47,7 +47,7 @@ color: const Color.fromARGB(255, 245, 245, 245),
                     width: 704,
                     height: 832, 
  child :Stack(children: [  Positioned(top: 276,left: 32, 
- child:Wrap(children: [Image.asset('assets/sign up 22 1.png')],)                      
+ child:Wrap(children: [Image.asset('assets/signup221.png')],)                      
                  ,width: 641, )]),
               ):Container(),
           
@@ -61,7 +61,7 @@ color: const Color.fromARGB(255, 245, 245, 245),
                         Container(
                           margin: EdgeInsets.only(bottom: isMobile ? 20 : 32),
                           child: Image.asset(
-                            'assets/logo 1.png',
+                            'assets/logo1.png',
                             width: isMobile ? double.infinity  : 106,
                             height: isMobile ? screenWidth * 0.25 : 106,
                             fit: BoxFit.contain,
@@ -166,7 +166,7 @@ color: const Color.fromARGB(255, 245, 245, 245),
                                   children: [
                                     
                                     _buildSocialButton(
-                                      icon: 'assets/facebook circle.png',
+                                      icon: 'assets/facebookcircle.png',
                                       text: 'تسجبل دخول عبر',
                                       onPressed: () {},
                                       isMobile: isMobile,
@@ -174,7 +174,7 @@ color: const Color.fromARGB(255, 245, 245, 245),
                                     SizedBox(height: 12),
                                     
                                     _buildSocialButton(
-                                      icon: 'assets/Google@2x (1).png',
+                                      icon: 'assets/Google2x_1.png',
                                       text: 'سجل دخول عبر',
                                       onPressed: () {},
                                       isMobile: isMobile,
@@ -186,7 +186,7 @@ color: const Color.fromARGB(255, 245, 245, 245),
                                   children: [
                                     Expanded(
                                       child: _buildSocialButton(
-                                        icon: 'assets/facebook circle.png',
+                                        icon: 'assets/facebookcircle.png',
                                         text: 'تسجيل دخول عبر',
                                         onPressed: ()async {
                                         },
@@ -196,7 +196,7 @@ color: const Color.fromARGB(255, 245, 245, 245),
                                     SizedBox(width: 16),
                                     Expanded(
                                       child: _buildSocialButton(
-                                        icon: 'assets/Google@2x (1).png',
+                                        icon: 'assets/Google2x_1.png',
                                         text: 'تسجيل دخول عبر',
                                         onPressed: () {},
                                         isMobile: isMobile,
@@ -253,7 +253,7 @@ color: const Color.fromARGB(255, 245, 245, 245),
                         Container(
                           child:Wrap(
                           alignment: WrapAlignment.start,
-                          children: [ Image.asset('assets/logo 1.png',width: 106,height: 106,)],) 
+                          children: [ Image.asset('assets/logo1.png',width: 106,height: 106,)],) 
                           ,width: 457,height: 106,)
                      ,
                      Container(
@@ -460,7 +460,7 @@ mainAxisAlignment: MainAxisAlignment.start,    children: [
  , child:  Row(
   spacing: 16,mainAxisAlignment: MainAxisAlignment.center,
   children: [ 
-  Image.asset('assets/facebook circle.png',width: 24,height: 44,),
+  Image.asset('assets/facebookcircle.png',width: 24,height: 44,),
     AutoTranslateText(text:'تسجبل دخول عبر',weight: FontWeight.w500,
     color:Color.fromARGB(255, 6, 69, 152))
 
@@ -517,7 +517,7 @@ if (userCredential != null) {
  , child:Row(mainAxisAlignment: MainAxisAlignment.center,
   spacing: 16,
   children: [ 
-  Image.asset('assets/Google@2x (1).png',width: 24,height: 44,),
+  Image.asset('assets/Google2x_1.png',width: 24,height: 44,),
   AutoTranslateText(text:'تسجبل دخول عبر',weight: FontWeight.w500,fontSize: 18,
     color:Color.fromARGB(255, 6, 69, 152))]))),
           

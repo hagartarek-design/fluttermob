@@ -673,7 +673,7 @@ Container(child: Row(
 Column(
   spacing: 8,
   crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.center, children: [
-Image.asset('assets/Component 234.png',width: 32,height: 32,)
+Image.asset('assets/Component234.png',width: 32,height: 32,)
 ,Text('الامتحنات والواجبات',style: TextStyle(fontWeight: FontWeight.w500,fontSize:16,color: Color.fromARGB(255, 222, 61, 49)),)
 
 ],)
@@ -737,7 +737,7 @@ InkWell(
 Column(
   spacing: 8,
   crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.center, children: [
-Image.asset('assets/Component 232 (1).png',width: 32,height: 32,)
+Image.asset('assets/Component232_1.png',width: 32,height: 32,)
 ,Text('pdf',style: TextStyle(fontWeight: FontWeight.w500,fontSize:16,
 color: Color.fromARGB(255, 242, 195, 42)
 
@@ -896,7 +896,7 @@ print('Content items: $contentList');
 Column(
   spacing: 8,
   crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.center, children: [
-Image.asset('assets/Component 232.png',width: 32,height: 32,)
+Image.asset('assets/Component232.png',width: 32,height: 32,)
 ,Text('المحاضرات',style: TextStyle(fontWeight: FontWeight.w500,fontSize:16,color: Color.fromARGB(255, 6, 182, 141)),)
 
 ],)
@@ -909,7 +909,7 @@ InkWell(child:Container( width:271 ,height:100,decoration: BoxDecoration(
 Column(
   spacing:8,
   crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.center, children: [
-Image.asset('assets/Component 233.png',width: 32,height: 32,)
+Image.asset('assets/Component233.png',width: 32,height: 32,)
 ,Text('محتوي الدرس',style: TextStyle(fontWeight: FontWeight.w500,fontSize:16,color: Color.fromARGB(255, 245, 245, 245)),)
 
 ],)

@@ -73,7 +73,7 @@ var g=controller.course_info.map((e)=>e.section?.length);
 ,
               Row(
                 children: [
-              Image.asset('assets/Group 87935.png', width: 55),
+              Image.asset('assets/Group87935.png', width: 55),
                 ],
               ),
             ],
@@ -102,8 +102,8 @@ var g=controller.course_info.map((e)=>e.section?.length);
                           // ? NetworkImage('${controller.img2}'): NetworkImage('${controller.img}'),
                         ),
                       ),
-                    Image.asset('icons/Vector (3).png',width: 40,height: 41,),
-                    Image.asset('icons/Vector (2).png',width: 39.02,height: 40,)
+                    Image.asset('icons/Vector_3.png',width: 40,height: 41,),
+                    Image.asset('icons/Vector_2.png',width: 39.02,height: 40,)
                     // _buildButton('تسجيل دخول', isPrimary: true),
                     // const SizedBox(width: 12),
                     // _buildButton('انشاء حساب'),
@@ -120,7 +120,7 @@ var g=controller.course_info.map((e)=>e.section?.length);
                       _navText('ذاكر'),
                       _navText('الرئيسية', highlight: true),
                       const SizedBox(width: 12),
-                      Image.asset('assets/Group 87935.png', width: 55),
+                      Image.asset('assets/Group87935.png', width: 55),
                     ],
                   ),
               ],
@@ -228,7 +228,7 @@ SizedBox(width: 629,child:Row(
 SizedBox(width: 629,child:Row(
   mainAxisAlignment: MainAxisAlignment.end,
   children: [ 
-Image.asset('assets/OIP 1.png',width: 93.91,height: 90,)
+Image.asset('assets/OIP1.png',width: 93.91,height: 90,)
 
 ],))
 
@@ -825,7 +825,7 @@ Widget _buildFooter(BuildContext context) {
                       Align(
                         alignment: Alignment.centerRight,
                         child: Image.asset(
-                          'assets/Group 87935.png',
+                          'assets/Group87935.png',
                           width: 80,
                           height: 65.7,
                         ),

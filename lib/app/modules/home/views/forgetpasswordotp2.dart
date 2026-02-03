@@ -58,7 +58,7 @@ Container(
       
       width: 640,height: 832,
       child:
-   Image.asset('assets/forgot password 1.png',width: 497,height: 388,) ,)   ,                 
+   Image.asset('assets/forgotpassword1.png',width: 497,height: 388,) ,)   ,                 
                   
                 
             
@@ -84,7 +84,7 @@ Container(
                           width: 457,height: 106,
                           child:Row(
                           mainAxisAlignment: MainAxisAlignment.end,
-                          children: [ Image.asset('assets/logo 1.png',width: 106,height: 106,)],) 
+                          children: [ Image.asset('assets/logo1.png',width: 106,height: 106,)],) 
                           ,)
                      ,
                      SizedBox(

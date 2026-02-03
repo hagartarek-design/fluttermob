@@ -104,7 +104,7 @@ var g=controller.course_info.map((e)=>e.section?.length);
               
               Row(
                 children: [
-              Image.asset('assets/Group 87935.png', width: 55),
+              Image.asset('assets/Group87935.png', width: 55),
                 ],
               ),
             ],
@@ -172,8 +172,8 @@ var g=controller.course_info.map((e)=>e.section?.length);
                           
                         ),
                       ),
-                    Image.asset('icons/Vector (3).png',width: 40,height: 41,),
-                    Image.asset('icons/Vector (2).png',width: 39.02,height: 40,)
+                    Image.asset('icons/Vector_3.png',width: 40,height: 41,),
+                    Image.asset('icons/Vector_2.png',width: 39.02,height: 40,)
                     
                     
                     
@@ -190,7 +190,7 @@ var g=controller.course_info.map((e)=>e.section?.length);
                       _navText('ذاكر'),
                       _navText('الرئيسية', highlight: true),
                       const SizedBox(width: 12),
-                      Image.asset('assets/Group 87935.png', width: 55),
+                      Image.asset('assets/Group87935.png', width: 55),
                     ],
                   ),
               ],
@@ -284,7 +284,7 @@ Column(
     ,Column(
   crossAxisAlignment: CrossAxisAlignment.center
   ,mainAxisAlignment: MainAxisAlignment.center,
-  children: [Image.asset("assets/Frame (3).png",width: 249,height: 246,)],),
+  children: [Image.asset("assets/Frame_3.png",width: 249,height: 246,)],),
  Text('مفيش طلب ليك دلوقتي',style: TextStyle(
   fontSize: 36,fontWeight: FontWeight.w600,
   color: Color.fromARGB(255, 6, 69, 152)),)
@@ -854,7 +854,7 @@ Row(
       
       ],),
       
-    Image.asset('assets/ملازم.png',width: 77,height: 79,)])))
+    Image.asset('assets/malazem.png',width: 77,height: 79,)])))
  
  
   ]) );
@@ -1255,7 +1255,7 @@ Widget _buildFooter(BuildContext context) {
                       Align(
                         alignment: Alignment.centerRight,
                         child: Image.asset(
-                          'assets/Group 87935.png',
+                          'assets/Group87935.png',
                           width: 80,
                           height: 65.7,
                         ),

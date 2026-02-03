@@ -383,7 +383,7 @@ Widget _buildPagination(HomeController controller, int currentPage) {
                     },
                     child: const Icon(Icons.menu, color: Colors.white),
                   ),
-                  Image.asset('assets/Group 87935.png', width: 55),
+                  Image.asset('assets/Group87935.png', width: 55),
                 ],
               ),
             )
@@ -406,9 +406,9 @@ Widget _buildPagination(HomeController controller, int currentPage) {
                               radius: 24,
                             ),
                           ),
-                          Image.asset('icons/Vector (3).png',
+                          Image.asset('icons/Vector_3.png',
                               width: 40, height: 41),
-                          Image.asset('icons/Vector (2).png',
+                          Image.asset('icons/Vector_2.png',
                               width: 39.02, height: 40),
                         ],
                       ),
@@ -423,7 +423,7 @@ Widget _buildPagination(HomeController controller, int currentPage) {
                             _navText('ذاكر'),
                             _navText('الرئيسية', highlight: true),
                             const SizedBox(width: 12),
-                            Image.asset('assets/Group 87935.png', width: 55),
+                            Image.asset('assets/Group87935.png', width: 55),
                           ],
                         ),
                     ],
@@ -1157,7 +1157,7 @@ styleFrom(backgroundColor: Color.fromARGB(255, 6, 69, 152)
                         const SizedBox(height: 12),
                         _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
                         const SizedBox(height: 12),
-                        _buildInfoRow('icons/sms (1).png', 'support@ashtar.app'),
+                        _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
                         const SizedBox(height: 12),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -1215,7 +1215,7 @@ styleFrom(backgroundColor: Color.fromARGB(255, 6, 69, 152)
                         Align(
                           alignment: Alignment.centerRight,
                           child: Image.asset(
-                            'assets/Group 87935.png',
+                            'assets/Group87935.png',
                             width: 80,
                             height: 65.7,
                           ),
