@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:my_app/app/models/wallet%20copy%204.dart';
+import 'package:my_app/app/modules/home/views/mennimenue.dart';
 import 'package:my_app/app/modules/home/views/my.dart';
 import 'package:my_app/app/modules/home/views/myExam.dart';
 import 'package:my_app/app/routes/app_pages.dart';
@@ -32,7 +33,7 @@ class _ExamSolveViewerState extends State<ExamSolve> {
 
 HomeController controller=Get.find();
 
- Timer? _dashboardTokenTimer;
+//  Timer? _dashboardTokenTimer;
 
 // @override
 // void initState() {
@@ -43,10 +44,10 @@ HomeController controller=Get.find();
 
 void _startDashboardTokenMonitoring() {
   // Stop any existing timer
-  _dashboardTokenTimer?.cancel();
+  controller.dashboardTokenTimer?.cancel();
   
   // Check token every minute when in Dashboard
-  _dashboardTokenTimer = Timer.periodic(Duration(minutes: 1), (timer) {
+ controller.dashboardTokenTimer = Timer.periodic(Duration(minutes: 1), (timer) {
     if (mounted) {
       controller.checkDashboardToken();
     }
@@ -58,8 +59,8 @@ void dispose() {
     _timer?.cancel();
 
   // Stop the Dashboard timer
-  _dashboardTokenTimer?.cancel();
-  _dashboardTokenTimer = null;
+controller.dashboardTokenTimer?.cancel();
+ controller.dashboardTokenTimer = null;
   
   controller.stopSolvetimer();
   controller.isSolveActive.value = false;
@@ -462,16 +463,23 @@ Widget _buildPagination(HomeController controller, int currentPage) {
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  InkWell(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        barrierColor: Colors.transparent,
-                        builder: (context) => const MenuDialog(),
-                      );
-                    },
-                    child: const Icon(Icons.menu, color: Colors.white),
-                  ),
+                  InkWell( onTap: (){
+            showDialog(
+      context: context,
+      barrierColor: Colors.transparent, 
+      builder: (context) => const mennimenu(),
+    );
+
+
+
+
+
+
+       
+
+       }, child:  Icon(Icons.menu, color:Colors.white ,))   
+,
+              
                   Image.asset('assets/Group87935.png', width: 55),
                 ],
               ),

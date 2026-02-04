@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:my_app/app/modules/home/controllers/home_controller.dart';
 import 'package:my_app/app/modules/home/views/homeafterlogin.dart';
 import 'package:my_app/app/modules/home/views/lecturenotpaid.dart';
@@ -12,6 +15,7 @@ import 'package:my_app/app/modules/home/views/schedule_center.dart';
 import 'package:my_app/app/modules/home/views/subject.dart';
 import 'package:my_app/app/modules/home/views/subjectbooks.dart';
 import 'package:my_app/app/modules/home/views/subjecttype.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 
@@ -19,14 +23,16 @@ import 'package:my_app/app/modules/home/views/subjecttype.dart';
 
 
 
-
-class SchedualCenter2 extends StatelessWidget {
+   class SchedualCenter2 extends StatefulWidget {
+     const SchedualCenter2({super.key});
+   
+     @override
+     State<SchedualCenter2> createState() => _SchedualCenter2State();
+   }
+   
+   class _SchedualCenter2State extends State<SchedualCenter2> {
  
-   var selectedSection = Rx<String?>(null);
-
-
-   SchedualCenter2({super.key
-   });
+  var selectedSection = Rx<String?>(null);
 var selected = false.obs;
  var selected1=false.obs;
  var selected2=false.obs;
@@ -36,7 +42,91 @@ var selected = false.obs;
 int _currentPage=0;
 final _maxLengthNotifier = ValueNotifier<int?>(null); 
 
+   HomeController controller=Get.find();  Timer? _refreshTimer;
+// Timer? _cartTokenTimer;
+// HomeController controller=Get.find();
 
+
+
+@override
+void initState() {
+  super.initState();
+  
+  controller.currentScreen.value = '/DashboardScreen';
+  controller.iscenterOpen.value = true;
+  controller.isCenterActive.value = true;
+  
+  // Start Dashboard-specific token monitoring
+  _startDashboardTokenMonitoring();
+  
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    _initializeDashboardWithRefresh();
+  });
+}
+
+void _startDashboardTokenMonitoring() {
+  // Stop any existing timer
+ controller.dashboardTokenTimer?.cancel();
+  
+  // Check token every minute when in Dashboard
+  controller.dashboardTokenTimer = Timer.periodic(Duration(minutes: 1), (timer) {
+    if (mounted) {
+      controller.checkDashboardToken();
+    }
+  });
+}
+
+@override
+void dispose() {
+  // Stop the Dashboard timer
+  controller.dashboardTokenTimer?.cancel();
+  controller.dashboardTokenTimer = null;
+  
+  controller.stopCentertimer();
+  controller.isCenterActive.value = false;
+  
+  super.dispose();
+}
+
+
+
+ Future<void> _initializeDashboardWithRefresh() async {
+  print('📱 DashboardScreen - Initializing with auto-refresh');
+  
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
+  
+  if (token == null || token.isEmpty) {
+    print('⚠️ No token in Dashboard');
+    return;
+  }
+  
+  try {
+    final expiryDate = JwtDecoder.getExpirationDate(token);
+    final remaining = expiryDate.difference(DateTime.now());
+    
+    print('📱 Dashboard token expires in: ${remaining.inMinutes} minutes');
+    
+    // If token is already expired, refresh immediately
+    if (remaining.isNegative) {
+      print('🔄 Token already expired, refreshing now...');
+      await controller.refreshAccessToken();
+    } 
+    // If token expires in less than 10 minutes, refresh now
+    else if (remaining.inMinutes < 10) {
+      print('🔄 Token expiring soon, refreshing now...');
+      await controller.refreshAccessToken();
+    }
+    
+    // Start Dashboard timer
+    if (controller.isCenterActive.value) {
+      controller.startCenterTimer();
+    }
+    
+  } catch (e) {
+    print('❌ Error in Dashboard token initialization: $e');
+  }
+}
 
 
   @override

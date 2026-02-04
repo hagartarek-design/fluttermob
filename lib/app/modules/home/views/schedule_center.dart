@@ -11,6 +11,7 @@ import 'package:my_app/app/modules/home/views/schedual_center2.dart';
 import 'package:my_app/app/modules/home/views/subject.dart';
 import 'package:my_app/app/modules/home/views/subjectbooks.dart';
 import 'package:my_app/app/modules/home/views/subjecttype.dart';
+import 'package:my_app/app/routes/app_pages.dart';
 
 
 
@@ -238,8 +239,7 @@ int totalSectionsLength = controller.course_info
                       backgroundColor: Color.fromARGB(255, 6, 69, 152),
                       shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8))),
-                    onPressed: (){Navigator.push(context, MaterialPageRoute(builder:
-                     (context){return SchedualCenter2(); }));}, child: Text('احجز السنتر',style: 
+                    onPressed: (){Get.toNamed(Routes.CENTER);}, child: Text('احجز السنتر',style: 
                     TextStyle(color: Color.fromARGB(255, 255, 255, 255)),)) 
                 , ), Text('احجز السنتر',
             style: TextStyle(fontWeight: FontWeight.w600

@@ -16,8 +16,27 @@ import 'package:my_app/app/modules/home/views/walletMobile.dart';
 
 import 'settings.dart';
 
-class Profile extends StatelessWidget {
-  Profile({super.key});
+
+class Profile extends StatefulWidget {
+  const Profile({super.key});
+
+  @override
+  State<Profile> createState() => _ProfileState();
+}
+
+class _ProfileState extends State<Profile> {
+HomeController controller=Get.find();
+@override
+void initState() {
+  super.initState();
+  controller.  dashboardTokenTimer?.cancel();
+ controller.dashboardTokenTimer = null;
+  
+  controller.stopCentertimer();
+  controller.isCenterActive.value = false;
+}
+
+
 
   @override
   Widget build(BuildContext context) {

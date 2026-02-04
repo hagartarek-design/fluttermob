@@ -15,10 +15,12 @@ import 'package:my_app/app/modules/home/views/myExam.dart';
 import 'package:my_app/app/modules/home/views/mybooks.dart';
 import 'package:my_app/app/modules/home/views/myquestionask.dart';
 import 'package:my_app/app/modules/home/views/profile.dart';
+import 'package:my_app/app/modules/home/views/schedual_center2.dart';
 import 'package:my_app/app/modules/home/views/settings.dart';
 import 'package:my_app/app/modules/home/views/subjectbooks.dart';
 import 'package:my_app/app/modules/home/views/Wallet.dart';
 import 'package:my_app/app/modules/home/views/subjects.dart';
+import 'package:my_app/app/modules/home/views/walletMobile.dart';
 part 'app_routes.dart';
 
 class AppPages {
@@ -48,6 +50,11 @@ class AppPages {
     )
     ,
     GetPage(
+      name: Routes.CENTER,
+      page: () => SchedualCenter2(),
+    )
+    ,
+    GetPage(
       name: Routes.EXAMSOLVE,
       binding: BindingsBuilder(() {
       Get.lazyPut<HomeController>(() => HomeController());
@@ -69,6 +76,12 @@ class AppPages {
     GetPage(
       name: Routes.EMPTYCART,
       page: () => Emptycart(
+  
+      ),
+    ),
+    GetPage(
+      name: Routes.HOMEVIEW,
+      page: () => HomeView(
   
       ),
     ),
@@ -99,7 +112,7 @@ class AppPages {
       Get.lazyPut<HomeController>(()=>HomeController());
     })
     )//,
-   , GetPage(name:Routes.WALLET,page: ()=>Wallet()
+   , GetPage(name:Routes.WALLET,page: ()=>walletMobile()
     ,binding: BindingsBuilder(()=>Get.lazyPut<HomeController>(()=>HomeController()))
     
     ),GetPage(name: Routes.SUBJECTBOOKS,page: () => Subjectbooks(),)

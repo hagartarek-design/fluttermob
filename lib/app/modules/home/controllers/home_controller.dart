@@ -34,7 +34,6 @@ import 'package:my_app/app/models/wallet%20copy%202.dart';
 import 'package:my_app/app/models/wallet%20copy%203.dart';
 import 'package:my_app/app/models/wallet%20copy%205.dart';
 import 'package:my_app/app/models/wallet%20copy.dart';
-import 'package:my_app/app/modules/home/views/subject.dart';
 import 'package:my_app/app/modules/home/views/videofullscreen.dart';
 import 'package:my_app/app/modules/home/views/Wallet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -118,8 +117,10 @@ Future<void> checkTokenAndRedirect() async {
     final currentRoute = Get.currentRoute;
     final isInDashboard = currentRoute.contains('Lecturenotpaid');
     final isInSolve = currentRoute.contains('ExamSolve');
+    final isInCenter = currentRoute.contains('SchedualCenter2');
     final isInCart= currentRoute.contains('Addedto');
     final isInWallet = currentRoute.contains('Emptycart');
+    final isInAsk = currentRoute.contains('Myquestions');
     
     if (JwtDecoder.isExpired(token)) {
       print('⏰ Token expired');
@@ -138,6 +139,14 @@ Future<void> checkTokenAndRedirect() async {
         await refreshAccessToken();
       }
      else if (isInWallet) {
+        print('📱 In Dashboard - Will try to refresh token instead of redirecting');
+        await refreshAccessToken();
+      }
+     else if (isInCenter) {
+        print('📱 In Dashboard - Will try to refresh token instead of redirecting');
+        await refreshAccessToken();
+      }
+     else if (isInAsk) {
         print('📱 In Dashboard - Will try to refresh token instead of redirecting');
         await refreshAccessToken();
       }
@@ -204,12 +213,16 @@ void startTokenMonitoring() {
    else if (!Get.currentRoute.contains('ExamSolve')) {
       checkTokenAndRedirect();
     } 
+   else if (!Get.currentRoute.contains('Myquestions')) {
+      checkTokenAndRedirect();
+    } 
     
     else {
       print('📱 In Dashboard - Skipping auto-logout check (Dashboard handles refresh)');
     }
   });
-}  void stopAutoRefresh() {
+}  
+void stopAutoRefresh() {
     _refreshTimer?.cancel();
     _refreshTimer = null;
   }
@@ -226,6 +239,7 @@ Future<void> _redirectToHomeView() async {
   isDashboardOpen.value = false;
   isCartOpen.value = false;
   isWalletOpen.value=false;
+  isaskOpen.value=false;
   currentScreen.value = '';
   token = '';
   
@@ -268,6 +282,27 @@ void startExamsolveTimer() {
     scheduleNextRefresh(token);
   }
 }
+void startCenterTimer() {
+  print('بدء تايمر Cart');
+  isCenterActive.value = true;
+  
+  _refreshTimer?.cancel();
+  
+  if (token.isNotEmpty && iscenterOpen.value) {
+    scheduleNextRefresh(token);
+  }
+}
+void startAskTimer() {
+  print('بدء تايمر Cart');
+  isaskActive.value = true;
+  
+  _refreshTimer?.cancel();
+  
+  if (token.isNotEmpty && isaskOpen.value) {
+    scheduleNextRefresh(token);
+  }
+}
+ Timer? dashboardTokenTimer;
 void startWalletTimer() {
   print('بدء تايمر Cart');
   isWalletActive.value = true;
@@ -320,9 +355,17 @@ void scheduleNextRefresh(String token) {
     print('⏸ Wallet غير نشط - لا أجدد تلقائياً');
     return;
   }
+ else if (!isaskActive.value) {
+    print('⏸ askques غير نشط - لا أجدد تلقائياً');
+    return;
+  }
   
  else if (!isSolveActive.value) {
     print('⏸ Wallet غير نشط - لا أجدد تلقائياً');
+    return;
+  }
+ else if (!isCenterActive.value) {
+    print('⏸ Center غير نشط - لا أجدد تلقائياً');
     return;
   }
   
@@ -349,6 +392,12 @@ void scheduleNextRefresh(String token) {
         else if (isSolveActive.value) {
           smartRefreshToken();
         }
+        else if (isCenterActive.value) {
+          smartRefreshToken();
+        }
+        else if (isaskActive.value) {
+          smartRefreshToken();
+        }
       });
     } else {
       print('سأجدد بعد ${refreshTime.inMinutes} دقيقة');
@@ -363,6 +412,12 @@ void scheduleNextRefresh(String token) {
           smartRefreshToken();
         }
        else if (isSolveActive.value) {
+          smartRefreshToken();
+        }
+       else if (isCenterActive.value) {
+          smartRefreshToken();
+        }
+       else if (isaskActive.value) {
           smartRefreshToken();
         }
       });
@@ -394,6 +449,8 @@ Future<void> smartRefreshToken()  async {
     print(' في cart: ${isCartOpen.value}');
     print(' في wallet: ${isWalletOpen.value}');
     print(' في solve: ${isSolveOpen.value}');
+    print(' في center: ${iscenterOpen.value}');
+    print(' في ask: ${isaskOpen.value}');
     
     if (currentScreen.value.contains('Lecturenotpaid') || isDashboardOpen.value) {
       print(' في Dashboard - تحقق من الحاجة للتجديد');
@@ -438,7 +495,35 @@ Future<void> smartRefreshToken()  async {
         print(' التوكن ساري لوقت كافي في Emptycart');
       }
     } 
+   else if (currentScreen.value.contains('Myquestions') || isaskOpen.value) {
+      print(' في Emptycart - تحقق من الحاجة للتجديد');
+      
+      if (remaining.isNegative) {
+        print(' التوكن منتهي - جدد فوراً');
+        await refreshAccessToken();
+      }
+       else if (remaining.inMinutes < 10) {
+        print(' بقي أقل من 10 دقائق - جدد التوكن');
+        await refreshAccessToken();
+      } else {
+        print(' التوكن ساري لوقت كافي في Emptycart');
+      }
+    } 
    else if (currentScreen.value.contains('ExamSolve') || isSolveOpen.value) {
+      print(' في Emptycart - تحقق من الحاجة للتجديد');
+      
+      if (remaining.isNegative) {
+        print(' التوكن منتهي - جدد فوراً');
+        await refreshAccessToken();
+      }
+       else if (remaining.inMinutes < 10) {
+        print(' بقي أقل من 10 دقائق - جدد التوكن');
+        await refreshAccessToken();
+      } else {
+        print(' التوكن ساري لوقت كافي في Emptycart');
+      }
+    } 
+   else if (currentScreen.value.contains('SchedualCenter2') || iscenterOpen.value) {
       print(' في Emptycart - تحقق من الحاجة للتجديد');
       
       if (remaining.isNegative) {
@@ -494,6 +579,14 @@ Future<void> smartRefreshToken()  async {
       }
    else   if (Get.currentRoute.contains('Emptycart')) {
         isWalletOpen.value = true;
+        scheduleNextRefresh(token);
+      }
+   else   if (Get.currentRoute.contains('SchedualCenter2')) {
+        iscenterOpen.value = true;
+        scheduleNextRefresh(token);
+      }
+   else   if (Get.currentRoute.contains('Myquestions')) {
+        isaskOpen.value = true;
         scheduleNextRefresh(token);
       }
     }
@@ -616,7 +709,7 @@ Future<void> smartRefreshToken()  async {
     final user = userCredential.user;
 
     final firebaseIdToken = await user?.getIdToken();
-    debugPrint('✅ Firebase ID Token: $firebaseIdToken');
+    // debugPrint('✅ Firebase ID Token: $firebaseIdToken');
 
     final response = await http.post(
       Uri.parse('${Applinks.baseurl}/auth/google-login/students'),
@@ -1343,8 +1436,13 @@ double percentage=0;
    RxBool isDashboardOpen=false.obs;
    RxBool isSolveOpen=false.obs;
   RxBool isCartOpen=false.obs;
+  RxBool iscenterOpen=false.obs;
+  RxBool isaskOpen=false.obs;
+
   RxBool isWalletOpen=false.obs;
   RxBool isDashboardActive=false.obs;
+  RxBool isCenterActive=false.obs;
+  RxBool isaskActive=false.obs;
 RxString currentScreen='mainpage'.obs;
 RxBool isExamActive=false.obs;
 RxBool isCartActive=false.obs;
@@ -1363,19 +1461,35 @@ void stopDashboardTimer() {
 void stopCarttimer(){
   print('ايقاف تايمر Exam');
 isCartActive.value=false;
-_refreshTimer?.cancel();update();
+_refreshTimer?.cancel();
+}
+void stopCentertimer(){
+  print('ايقاف تايمر Center');
+isCenterActive.value=false;
+_refreshTimer?.cancel();
+}
+void stopAsktimer(){
+  print('ايقاف تايمر Center');
+isaskActive.value=false;
+_refreshTimer?.cancel();
 }
 void stopWallettimer(){
   print('ايقاف تايمر Exam');
 isWalletActive.value=false;
-_refreshTimer?.cancel();update();
+_refreshTimer?.cancel();
 }
 
 void stopSolvetimer(){
   print('ايقاف تايمر ExamSolve');
 isSolveActive.value=false;
-_refreshTimer?.cancel();update();
+_refreshTimer?.cancel();
 }
+
+// void stopCentertimer(){
+//   print('ايقاف تايمر ExamSolve');
+// isSolveActive.value=false;
+// _refreshTimer?.cancel();update();
+// }
 Future<void> smartNavigate(String routeName, ) async {
   try {
     print('🧭 Navigating to: $routeName from ${Get.currentRoute}');
@@ -1409,6 +1523,8 @@ Future<void> smartNavigate(String routeName, ) async {
     Get.toNamed(routeName, );
   }
 }
+
+
 Future<void> smartcartNavigate(String routeName) async {
   try {
     print('🧭 Navigating to: $routeName from ${Get.currentRoute}');
@@ -1491,6 +1607,70 @@ Future<void> smartSolveNavigate(String routeName, {Map<String, dynamic>? argumen
       isSolveActive.value = true;
     } else {
       isSolveOpen.value = false;
+    }
+    
+    print('🚀 Using offAndToNamed');
+    
+    // Pass arguments directly, don't wrap in {}
+    Get.toNamed(routeName, arguments: arguments);
+    
+    print('✅ Navigation completed');
+  } catch (e) {
+    print('❌ Navigation error: $e');
+    
+    // Fallback navigation
+    Get.toNamed(routeName, arguments: arguments);
+  }
+}
+Future<void> smartAskNavigate(String routeName, {Map<String, dynamic>? arguments}) async {
+  try {
+    print('🧭 Navigating to: $routeName from ${Get.currentRoute}');
+    
+    if (Get.currentRoute.contains('Myquestions') && !routeName.contains('Myquestions')) {
+      print('🏃 Leaving Addedto - stopping timers');
+      isaskActive.value = false;
+      stopAsktimer();
+    }
+    
+    currentScreen.value = routeName;
+    
+    if (routeName.contains('Myquestions')) {
+      isaskOpen.value = true;
+      isaskActive.value = true;
+    } else {
+      isaskOpen.value = false;
+    }
+    
+    print('🚀 Using offAndToNamed');
+    
+    // Pass arguments directly, don't wrap in {}
+    Get.toNamed(routeName, arguments: arguments);
+    
+    print('✅ Navigation completed');
+  } catch (e) {
+    print('❌ Navigation error: $e');
+    
+    // Fallback navigation
+    Get.toNamed(routeName, arguments: arguments);
+  }
+}
+Future<void> smartCenterNavigate(String routeName, {Map<String, dynamic>? arguments}) async {
+  try {
+    print('🧭 Navigating to: $routeName from ${Get.currentRoute}');
+    
+    if (Get.currentRoute.contains('SchedualCenter2') && !routeName.contains('SchedualCenter2')) {
+      print('🏃 Leaving Addedto - stopping timers');
+      isCenterActive.value = false;
+      stopCentertimer();
+    }
+    
+    currentScreen.value = routeName;
+    
+    if (routeName.contains('SchedualCenter2')) {
+      iscenterOpen.value = true;
+      isCenterActive.value = true;
+    } else {
+      iscenterOpen.value = false;
     }
     
     print('🚀 Using offAndToNamed');

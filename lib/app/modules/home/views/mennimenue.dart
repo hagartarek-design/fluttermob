@@ -70,7 +70,16 @@ class _mennimenuState extends State<mennimenu> {
               Icons.person_2_outlined,
               isSmallScreen: isSmallScreen
             ) ,onTap: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context){return Profile();}));
+        setState(() {
+           controller.smartAskNavigate(Routes.PROFILE);
+              controller.  dashboardTokenTimer?.cancel();
+ controller.dashboardTokenTimer = null;
+  controller.smartWalletNavigate(Routes.PROFILE);
+  controller.stopCentertimer();
+  controller.isCenterActive.value = false;
+ controller. smartSolveNavigate(Routes.PROFILE);
+ controller.smartcartNavigate(Routes.PROFILE);
+        });     
         },),  
             
             InkWell(
@@ -81,9 +90,19 @@ class _mennimenuState extends State<mennimenu> {
                 isSmallScreen: isSmallScreen
               ),
               onTap: ()async { 
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return walletMobile();
-                })); 
+        setState(() {
+            controller.smartAskNavigate(Routes.WALLET);
+              controller.  dashboardTokenTimer?.cancel();
+ controller.dashboardTokenTimer = null;
+  controller.smartWalletNavigate(Routes.WALLET);
+  controller.stopCentertimer();
+  controller.isCenterActive.value = false;
+ controller. smartSolveNavigate(Routes.WALLET);
+ controller.smartcartNavigate(Routes.WALLET);
+        });         
+                // Navigator.push(context, MaterialPageRoute(builder: (context) {
+                //   return walletMobile();
+                // })); 
             await   controller. fetchCodes(page: 1);
               }
             ),  
@@ -133,11 +152,25 @@ class _mennimenuState extends State<mennimenu> {
               Icons.arrow_back_outlined,
               isSmallScreen: isSmallScreen
             ),
-            onTap: (){  Navigator.push(context, MaterialPageRoute(builder: (context)
+            onTap: (){ 
+        setState(() {
+           controller.smartAskNavigate(Routes.MYSECTIONS);
+              controller.  dashboardTokenTimer?.cancel();
+ controller.dashboardTokenTimer = null;
+  controller.smartWalletNavigate(Routes.MYSECTIONS);
+  controller.stopCentertimer();
+  controller.isCenterActive.value = false;
+ controller. smartSolveNavigate(Routes.MYSECTIONS);
+ controller.smartcartNavigate(Routes.MYSECTIONS);
+        });      
+                // Navigator.push(context, Mate
+            //    Navigator.push(context, MaterialPageRoute(builder: (context)
             
-            {
-            controller.  fetchSections();
-              return MySections();})); },) ,
+            // {
+            // controller.  fetchSections();
+            //   return MySections();}));
+              
+               },) ,
        InkWell(child: _buildMenuItem(
               Icons.arrow_back_ios,
               "ملازمي",
@@ -145,7 +178,17 @@ class _mennimenuState extends State<mennimenu> {
               isSmallScreen: isSmallScreen
             ),
             onTap: (){
-              Get.toNamed(Routes.MYBOOKS);
+ setState(() {
+      controller.smartAskNavigate(Routes.MYBOOKS);
+              controller.  dashboardTokenTimer?.cancel();
+ controller.dashboardTokenTimer = null;
+  controller.smartWalletNavigate(Routes.MYBOOKS);
+  controller.stopCentertimer();
+  controller.isCenterActive.value = false;
+ controller. smartSolveNavigate(Routes.MYBOOKS);
+ controller.smartcartNavigate(Routes.MYBOOKS);
+ });              
+              // Get.toNamed(Routes.MYBOOKS);
             //  Navigator.push(context, MaterialPageRoute(builder: (context){
             //     return myBooks();
             //   }));
@@ -163,7 +206,15 @@ class _mennimenuState extends State<mennimenu> {
 //   return Material(child: MyExam());
 // }));
  setState(() {
-      Get.toNamed(Routes.MYEXAM);    
+       controller.smartAskNavigate(Routes.MYEXAM);
+              controller.  dashboardTokenTimer?.cancel();
+ controller.dashboardTokenTimer = null;
+  controller.smartWalletNavigate(Routes.MYEXAM);
+  controller.stopCentertimer();
+  controller.isCenterActive.value = false;
+ controller. smartSolveNavigate(Routes.MYEXAM);
+ controller.smartcartNavigate(Routes.MYEXAM);
+      // Get.toNamed(Routes.MYEXAM);    
 //  controller.smartSolveNavigate(Routes.MYEXAM);
         });
             }
@@ -175,8 +226,19 @@ class _mennimenuState extends State<mennimenu> {
               Icons.arrow_back_outlined,
               isSmallScreen: isSmallScreen
             ) ,onTap: (){
-
-            Navigator.push(context, MaterialPageRoute(builder: (context){return MyQuestionAsk();}));
+setState(() {
+       controller.smartAskNavigate(Routes.MYQUESTIONSASK);
+              controller.  dashboardTokenTimer?.cancel();
+ controller.dashboardTokenTimer = null;
+  
+  controller.stopCentertimer();controller.smartWalletNavigate(Routes.MYQUESTIONSASK);
+  controller.isCenterActive.value = false;
+ controller. smartSolveNavigate(Routes.MYQUESTIONSASK);
+ controller.smartcartNavigate(Routes.MYQUESTIONSASK);
+      // Get.toNamed(Routes.MYEXAM);    
+//  controller.smartSolveNavigate(Routes.MYEXAM);
+        });
+            // Navigator.push(context, MaterialPageRoute(builder: (context){return MyQuestionAsk();}));
 
             },)  
          ,
@@ -185,7 +247,7 @@ class _mennimenuState extends State<mennimenu> {
             onTap: (){
              
 controller.fetchCart();
-              Navigator.push(context, MaterialPageRoute(builder: (context){return Addedto();}));
+           Get.toNamed(Routes.ADDEDTO);
               
             },
             child: _buildMenuItem(
@@ -201,9 +263,9 @@ controller.fetchCart();
               Icons.list_alt_outlined,
               isSmallScreen: isSmallScreen
             )
-         ,onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context){
-      controller.fetchCart();return Emptycart();   }
-        ));},)    ,
+         ,onTap: (){
+          
+          Get.toNamed(Routes.EMPTYCART);},)    ,
             InkWell(
               
               child:_buildMenuItem(
@@ -212,9 +274,21 @@ controller.fetchCart();
               Icons.settings_outlined,
               isSmallScreen: isSmallScreen
             ),onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder:(context){
-                  return Material(child: settings() ,);
-                }));
+               setState(() {
+       controller.smartAskNavigate(Routes.SETTINGS);
+              controller.  dashboardTokenTimer?.cancel();
+ controller.dashboardTokenTimer = null;
+  
+  controller.stopCentertimer();controller.smartWalletNavigate(Routes.SETTINGS);
+  controller.isCenterActive.value = false;
+ controller. smartSolveNavigate(Routes.SETTINGS);
+ controller.smartcartNavigate(Routes.SETTINGS);
+      // Get.toNamed(Routes.MYEXAM);    
+//  controller.smartSolveNavigate(Routes.MYEXAM);
+        }); // Navigator.push(context, MaterialPageRoute(builder:(context){
+                //   return Material(child: settings() ,);
+                // }));
+                
               },
             ),
             
@@ -224,7 +298,19 @@ controller.fetchCart();
               Icons.logout_outlined,
               isSmallScreen: isSmallScreen
             ),onTap: (){
-              Navigator.push(context,MaterialPageRoute(builder: (context){return HomeView();}));
+         setState(() {
+       controller.smartAskNavigate(Routes.HOMEVIEW);
+              controller.  dashboardTokenTimer?.cancel();
+ controller.dashboardTokenTimer = null;
+  
+  controller.stopCentertimer();controller.smartWalletNavigate(Routes.HOMEVIEW);
+  controller.isCenterActive.value = false;
+ controller. smartSolveNavigate(Routes.HOMEVIEW);
+ controller.smartcartNavigate(Routes.HOMEVIEW);
+      // Get.toNamed(Routes.MYEXAM);    
+//  controller.smartSolveNavigate(Routes.MYEXAM);
+        });
+              // Navigator.push(context,MaterialPageRoute(builder: (context){return HomeView();}));
             } ,)
            
           ],

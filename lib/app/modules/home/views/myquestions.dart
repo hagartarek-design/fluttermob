@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:my_app/app/modules/home/controllers/home_controller.dart';
 import 'package:my_app/app/modules/home/controllers/trueAnswerExam.dart';
 import 'package:my_app/app/modules/home/views/lecturenotpaid.dart';
+import 'package:my_app/app/modules/home/views/mennimenue.dart';
 
 import 'package:my_app/app/modules/home/views/menuebar%20paym.dart';
 import 'package:my_app/app/modules/home/views/profile%20copy.dart';
@@ -12,6 +16,7 @@ import 'package:my_app/app/modules/home/views/subject.dart';
 import 'package:my_app/app/modules/home/views/subjectbooks.dart';
 import 'package:my_app/app/modules/home/views/subjecttype.dart';
 import 'package:my_app/app/modules/home/views/textfield.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../models/wallet.dart';
 import 'exam_solve.dart';
 import 'wallet_cart.dart';
@@ -38,7 +43,90 @@ bool isSelected2=false;
 
 
 
+  HomeController controller=Get.find();  
+// Timer? _cartTokenTimer;
+// HomeController controller=Get.find();
 
+//  Timer? _dashboardTokenTimer;
+
+@override
+void initState() {
+  super.initState();
+  
+  controller.currentScreen.value = '/DashboardScreen';
+  controller.isaskOpen.value = true;
+  controller.isaskActive.value = true;
+  
+  // Start Dashboard-specific token monitoring
+  _startDashboardTokenMonitoring();
+  
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    _initializeDashboardWithRefresh();
+  });
+}
+
+void _startDashboardTokenMonitoring() {
+  // Stop any existing timer
+  controller.dashboardTokenTimer?.cancel();
+  
+  // Check token every minute when in Dashboard
+controller.dashboardTokenTimer = Timer.periodic(Duration(minutes: 1), (timer) {
+    if (mounted) {
+      controller.checkDashboardToken();
+    }
+  });
+}
+
+@override
+void dispose() {
+  // Stop the Dashboard timer
+ controller.dashboardTokenTimer?.cancel();
+  controller.dashboardTokenTimer = null;
+  
+  controller.stopAsktimer();
+  controller.isaskActive.value = false;
+  
+  super.dispose();
+}
+
+ Future<void> _initializeDashboardWithRefresh() async {
+  print('📱 DashboardScreen - Initializing with auto-refresh');
+  
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
+  
+  if (token == null || token.isEmpty) {
+    print('⚠️ No token in Dashboard');
+    return;
+  }
+  
+  try {
+    final expiryDate = JwtDecoder.getExpirationDate(token);
+    final remaining = expiryDate.difference(DateTime.now());
+    
+    print('📱 Dashboard token expires in: ${remaining.inMinutes} minutes');
+    
+    // If token is already expired, refresh immediately
+    if (remaining.isNegative) {
+      print('🔄 Token already expired, refreshing now...');
+      await controller.refreshAccessToken();
+    } 
+    // If token expires in less than 10 minutes, refresh now
+    else if (remaining.inMinutes < 10) {
+      print('🔄 Token expiring soon, refreshing now...');
+      await controller.refreshAccessToken();
+    }
+    
+    // Start Dashboard timer
+    if (controller.isWalletActive.value) {
+      controller.startAskTimer();
+    }
+    
+  } catch (e) {
+    print('❌ Error in Dashboard token initialization: $e');
+  }
+}
+  
 
    var selectedSection = Rx<String?>(null);
 
@@ -107,8 +195,13 @@ initialPage: 1
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              
+           
        InkWell( onTap: (){
+         showDialog(
+      context: context,
+      barrierColor: Colors.transparent, 
+      builder: (context) => const mennimenu(),
+    );
 
 
 
@@ -117,7 +210,7 @@ initialPage: 1
 
        
 
-       }, child:  Icon(Icons.menu, color:Colors.white ,))   
+       }, child:  Icon(Icons.menu, color:Colors.white ,))    
 ,
               
               Row(
@@ -233,7 +326,7 @@ initialPage: 1
 
 
 
-    double cardWidth = 160;
+double cardWidth = 160;
     
 int totalSectionsLength = controller.course_info
     .where((e) => e.section != null)  

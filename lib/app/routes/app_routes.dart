@@ -4,6 +4,7 @@ abstract class Routes {
   Routes._();
   static const SUBJECTTYPE=_Paths.SUBJECTTYPE;
   static const SUBJECTBOOKS=_Paths.SUBJECTBOOKS;
+  static const HOMEVIEW=_Paths.HOMEVIEW;
   static const HOME = _Paths.HOMEAFTERLOGIN;
   static const MYEXAM = _Paths.MYEXAM;
   static const MAIN = _Paths.MAIN;
@@ -17,6 +18,7 @@ abstract class Routes {
   static const WALLET=_Paths.WALLET;
   static const PROFILE=_Paths.PROFILE;
 static const MYQUESTIONS=_Paths.MYQUESTIONS;
+static const CENTER=_Paths.CENTER;
 static const MYQUESTIONSASK=_Paths.MYQUESTIONSASK;
 static const ADDEDTO=_Paths.ADDEDTO;
 static const SETTINGS=_Paths.SETTINGS;
@@ -41,9 +43,11 @@ abstract class _Paths {
   static const MYSECTIONS='/MySections';
   static const MYEXAM='/MyExam';
   static const ADDEDTO='/Addedto';
+  static const CENTER='/SchedualCenter2';
   static const MAIN='/main';
+  static const HOMEVIEW='/HomeView';
   static const EMPTYCART='/Emptycart';
-  static const WALLET = '/Wallet';
+  static const WALLET = '/walletMobile';
   static const LECTURENOTPAID='/Lecturenotpaid';
   static const HOMEAFTERLOGIN='/Homeafterlogin';
   static const MAINPAGE='/mainpage';

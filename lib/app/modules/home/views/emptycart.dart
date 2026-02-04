@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 import 'package:my_app/app/modules/home/controllers/home_controller.dart';
 import 'package:my_app/app/modules/home/views/lecturenotpaid.dart';
@@ -10,6 +13,7 @@ import 'package:my_app/app/modules/home/views/profile%20copy.dart';
 import 'package:my_app/app/modules/home/views/subject.dart';
 import 'package:my_app/app/modules/home/views/subjectbooks.dart';
 import 'package:my_app/app/modules/home/views/subjecttype.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 
@@ -17,14 +21,15 @@ import 'package:my_app/app/modules/home/views/subjecttype.dart';
 
 
 
+class Emptycart extends StatefulWidget {
+  const Emptycart({super.key});
 
-class Emptycart extends StatelessWidget {
+  @override
+  State<Emptycart> createState() => _EmptycartState();
+}
+
+class _EmptycartState extends State<Emptycart> {
  
-   var selectedSection = Rx<String?>(null);
-
-
-   Emptycart({super.key
-   });
 var selected = false.obs;
  var selected1=false.obs;
  var selected2=false.obs;
@@ -33,6 +38,87 @@ var selected = false.obs;
 
 final int _currentPage=0;
 final _maxLengthNotifier = ValueNotifier<int?>(null); 
+HomeController controller=Get.find();
+@override
+void initState() {
+  super.initState();
+  
+  controller.currentScreen.value = '/DashboardScreen';
+  controller.isWalletOpen.value = true;
+  controller.isWalletActive.value = true;
+  
+  // Start Dashboard-specific token monitoring
+  _startDashboardTokenMonitoring();
+  
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    _initializeDashboardWithRefresh();
+  });
+}
+
+void _startDashboardTokenMonitoring() {
+  // Stop any existing timer
+  controller.dashboardTokenTimer?.cancel();
+  
+  // Check token every minute when in Dashboard
+  controller.dashboardTokenTimer = Timer.periodic(Duration(minutes: 1), (timer) {
+    if (mounted) {
+      controller.checkDashboardToken();
+    }
+  });
+}
+
+@override
+void dispose() {
+  // Stop the Dashboard timer
+  controller.dashboardTokenTimer?.cancel();
+ controller.dashboardTokenTimer = null;
+  
+  controller.stopWallettimer();
+  controller.isWalletActive.value = false;
+  
+  super.dispose();
+}
+
+ Future<void> _initializeDashboardWithRefresh() async {
+  print('📱 DashboardScreen - Initializing with auto-refresh');
+  
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
+  
+  if (token == null || token.isEmpty) {
+    print('⚠️ No token in Dashboard');
+    return;
+  }
+  
+  try {
+    final expiryDate = JwtDecoder.getExpirationDate(token);
+    final remaining = expiryDate.difference(DateTime.now());
+    
+    print('📱 Dashboard token expires in: ${remaining.inMinutes} minutes');
+    
+    // If token is already expired, refresh immediately
+    if (remaining.isNegative) {
+      print('🔄 Token already expired, refreshing now...');
+      await controller.refreshAccessToken();
+    } 
+    // If token expires in less than 10 minutes, refresh now
+    else if (remaining.inMinutes < 10) {
+      print('🔄 Token expiring soon, refreshing now...');
+      await controller.refreshAccessToken();
+    }
+    
+    // Start Dashboard timer
+    if (controller.isWalletActive.value) {
+      controller.startWalletTimer();
+    }
+    
+  } catch (e) {
+    print('❌ Error in Dashboard token initialization: $e');
+  }
+}
+  
+
+
   @override
   Widget build(BuildContext context) {
           
