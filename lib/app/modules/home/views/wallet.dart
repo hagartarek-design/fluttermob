@@ -14,14 +14,14 @@ import 'package:my_app/app/modules/home/views/subjecttype.dart';
 import 'wallet_cart.dart';
 
 // }
-class wallet extends StatefulWidget {
-  const wallet({super.key});
+class Wallet extends StatefulWidget {
+  const Wallet({super.key});
 
   @override
-  State<wallet> createState() => _walletState();
+  State<Wallet> createState() => _WalletState();
 }
 
-class _walletState extends State<wallet> {
+class _WalletState extends State<Wallet> {
 
  
    var selectedSection = Rx<String?>(null);
@@ -47,13 +47,13 @@ initialPage: 1
 );  int currentIndex = 1;
 HomeController controller=HomeController();
 var g=controller.course_info.map((e)=>e.section?.length);
-  void scrollToIndex(int index) {
-    _pageController.animateToPage(
-      index,
-      duration: Duration(milliseconds: 400),
-      curve: Curves.easeInOut,
-    );
-  }
+  // void scrollToIndex(int index) {
+  //   _pageController.animateToPage(
+  //     index,
+  //     duration: Duration(milliseconds: 400),
+  //     curve: Curves.easeInOut,
+  //   );
+  // }
 
     return Scaffold(
       appBar:isMobile? 
@@ -141,8 +141,8 @@ var g=controller.course_info.map((e)=>e.section?.length);
 int totalSectionsLength = controller.course_info
     .where((e) => e.section != null)      .fold(0, (sum, e) => sum + (e.section?.length ?? 0));
     int cardsPerRow = (constraints.maxWidth / cardWidth).floor();
-          return  SingleChildScrollView(
-        child: 
+          return  
+     
         Column(
           children: [
                 Container(
@@ -586,8 +586,8 @@ RightSidebar()
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 10),])    );
-    });}));
+            const SizedBox(height: 10),]);});
+      }));
   }
   Widget _buildAppBarButton({
     required String label,
@@ -804,14 +804,14 @@ Widget _buildFooter(BuildContext context) {
                           fontSize: 20,
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      _buildInfoRow('icons/location.png',
-                          '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
-                      const SizedBox(height: 12),
-                      _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
-                      const SizedBox(height: 12),
-                      _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
-                      const SizedBox(height: 12),
+                      // const SizedBox(height: 16),
+                      // _buildInfoRow('icons/location.png',
+                      //     '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
+                      // const SizedBox(height: 12),
+                      // _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
+                      // const SizedBox(height: 12),
+                      // _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
+                      // const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [

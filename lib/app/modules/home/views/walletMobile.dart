@@ -11,7 +11,7 @@ import 'package:my_app/app/modules/home/views/profile%20copy.dart';
 import 'package:my_app/app/modules/home/views/subject.dart';
 import 'package:my_app/app/modules/home/views/subjectbooks.dart';
 import 'package:my_app/app/modules/home/views/subjecttype.dart';
-import 'package:my_app/app/modules/home/views/wallet.dart' show wallet;
+import 'package:my_app/app/modules/home/views/Wallet.dart' show wallet, Wallet;
 import 'package:my_app/app/modules/home/views/walletMobile.dart' show walletMobile;
 import 'package:my_app/app/modules/home/views/wallet_cart%20copy.dart';
 
@@ -237,7 +237,7 @@ int currentIndex = 1;
                                       ),
                                       onTap: () {
                                         Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                          return isMobile? wallet():walletMobile();
+                                          return isMobile? Wallet():walletMobile();
                                         }));
                                       },
                                     ),
@@ -1191,13 +1191,13 @@ Widget _buildPaymentMethodCard({
                               fontSize: 20,
                             ),
                           ),
-                          const SizedBox(height: 16),
-                          _buildInfoRowFooter('icons/location.png', '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
-                          const SizedBox(height: 12),
-                          _buildInfoRowFooter('icons/Phone.png', '+20 106 662 0129'),
-                          const SizedBox(height: 12),
-                          _buildInfoRowFooter('icons/sms (1).png', 'support@ashtar.app'),
-                          const SizedBox(height: 12),
+                          // const SizedBox(height: 16),
+                          // _buildInfoRowFooter('icons/location.png', '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
+                          // const SizedBox(height: 12),
+                          // _buildInfoRowFooter('icons/Phone.png', '+20 106 662 0129'),
+                          // const SizedBox(height: 12),
+                          // _buildInfoRowFooter('icons/sms (1).png', 'support@ashtar.app'),
+                          // const SizedBox(height: 12),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [

@@ -24,14 +24,14 @@ import 'wallet_cart.dart';
 
 
 
-class myquestionask extends StatefulWidget {
-  const myquestionask({super.key});
+class MyQuestionAsk extends StatefulWidget {
+  const MyQuestionAsk({super.key});
 
   @override
-  State<myquestionask> createState() => _MyexamState();
+  State<MyQuestionAsk> createState() => _MyexamState();
 }
 
-class _MyexamState extends State<myquestionask> {
+class _MyexamState extends State<MyQuestionAsk> {
 bool isLoading = false;
 
 bool isSelected=true;
@@ -1485,14 +1485,14 @@ Widget _buildFooter(BuildContext context) {
                           fontSize: 20,
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      _buildInfoRow('icons/location.png',
-                          '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
-                      const SizedBox(height: 12),
-                      _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
-                      const SizedBox(height: 12),
-                      _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
-                      const SizedBox(height: 12),
+                      // const SizedBox(height: 16),
+                      // _buildInfoRow('icons/location.png',
+                      //     '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
+                      // const SizedBox(height: 12),
+                      // _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
+                      // const SizedBox(height: 12),
+                      // _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
+                      // const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [

@@ -3923,15 +3923,15 @@ class _HomeafterloginState extends State<SchudleForTheExam> {
                             fontSize: 20,
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        _buildInfoRow('icons/location.png',
-                            '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
-                        const SizedBox(height: 12),
-                        _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
-                        const SizedBox(height: 12),
-                        _buildInfoRow(
-                            'icons/sms (1).png', 'support@ashtar.app'),
-                        const SizedBox(height: 12),
+                        // const SizedBox(height: 16),
+                        // _buildInfoRow('icons/location.png',
+                        //     '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
+                        // const SizedBox(height: 12),
+                        // _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
+                        // const SizedBox(height: 12),
+                        // _buildInfoRow(
+                        //     'icons/sms (1).png', 'support@ashtar.app'),
+                        // const SizedBox(height: 12),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [

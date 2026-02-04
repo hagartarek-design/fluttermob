@@ -9,15 +9,24 @@ import 'package:my_app/app/modules/home/views/mybooks.dart';
 import 'package:my_app/app/modules/home/views/mycourses.dart';
 import 'package:my_app/app/modules/home/views/myquestionask.dart';
 import 'package:my_app/app/modules/home/views/profile.dart';
-import 'package:my_app/app/modules/home/views/sections.dart';
+import 'package:my_app/app/modules/home/views/MySections.dart';
 import 'package:my_app/app/modules/home/views/settings.dart';
-import 'package:my_app/app/modules/home/views/wallet.dart';
+import 'package:my_app/app/modules/home/views/Wallet.dart';
 import 'package:my_app/app/modules/home/views/walletMobile.dart';
+import 'package:my_app/app/routes/app_pages.dart';
 
 import 'addedto.dart';
 
-class RightSidebar extends StatelessWidget {
+
+
+class RightSidebar extends StatefulWidget {
   const RightSidebar({super.key});
+
+  @override
+  State<RightSidebar> createState() => _RightSidebarState();
+}
+
+class _RightSidebarState extends State<RightSidebar> {
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +137,7 @@ class RightSidebar extends StatelessWidget {
             
             {
             controller.  fetchSections();
-              return mySections();})); },) ,
+              return MySections();})); },) ,
        InkWell(child: _buildMenuItem(
               Icons.arrow_back_ios,
               "ملازمي",
@@ -149,11 +158,14 @@ class RightSidebar extends StatelessWidget {
               // isSmallScreen: isSmallScreen
             ),
       onTap: (){
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-  return Material(child: Myexam());
-}));
+//       Navigator.push(context, MaterialPageRoute(builder: (context) {
+//   return Material(child: MyExam());
+// }));
 
-            }
+       setState(() {
+          
+ controller.smartSolveNavigate(Routes.MYEXAM);
+        });       }
       
             ),
           InkWell(child:   _buildMenuItem(
@@ -163,7 +175,7 @@ class RightSidebar extends StatelessWidget {
               isSmallScreen: isSmallScreen
             ) ,onTap: (){
 
-            Navigator.push(context, MaterialPageRoute(builder: (context){return myquestionask();}));
+            Navigator.push(context, MaterialPageRoute(builder: (context){return MyQuestionAsk();}));
 
             },)  
          ,

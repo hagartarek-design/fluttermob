@@ -1072,7 +1072,7 @@ Column(
 selectpdf==false&&
 selectexamsassiggnment==true?
 Image.asset('icons/Component232.png',cacheWidth: 32,cacheHeight: 32,):
-Image.asset('assets/Component232.png',cacheWidth: 32,cacheHeight: 32,)
+Image.asset('assets/Component232_1.png',cacheWidth: 32,cacheHeight: 32,)
 ,
 Text('pdf',style: TextStyle(fontWeight: FontWeight.w500,fontSize:isMobile?12:16,
 color: selectedsection==true&&contentsection==false&&
@@ -2051,14 +2051,14 @@ Widget _buildFooter(BuildContext context) {
                           fontSize: 20,
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      _buildInfoRow('icons/location.png',
-                          '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
-                      const SizedBox(height: 12),
-                      _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
-                      const SizedBox(height: 12),
-                      _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
-                      const SizedBox(height: 12),
+                      // const SizedBox(height: 16),
+                      // _buildInfoRow('icons/location.png',
+                      //     '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
+                      // const SizedBox(height: 12),
+                      // _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
+                      // const SizedBox(height: 12),
+                      // _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
+                      // const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [

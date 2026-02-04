@@ -1,10 +1,13 @@
+import 'dart:async';
 import 'dart:convert';
 // import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:my_app/Applinks.dart';
 import 'package:my_app/app/models/wallet%20copy%202.dart';
 import 'package:my_app/app/modules/home/controllers/home_controller.dart';
 import 'package:my_app/app/modules/home/controllers/assignment2.dart';
@@ -21,6 +24,7 @@ import 'package:my_app/app/modules/home/views/subjects.dart';
 import 'package:my_app/app/modules/home/views/subjecttype.dart';
 import 'package:my_app/app/modules/home/views/videobyid.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 // import '';
 import '../controllers/pdf.service copy 3.dart';
@@ -50,13 +54,60 @@ class _LecturenotpaidState extends State<Lecturenotpaid> {
   bool _isPlaying = false;
   bool _isLoading = true;
   String _errorMessage = '';
+    HomeController controller=Get.find<HomeController>();
+   Future<void> _initializeDashboardWithRefresh() async {
+  print('📱 DashboardScreen - Initializing with auto-refresh');
+  
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
+  
+  if (token == null || token.isEmpty) {
+    print('⚠️ No token in Dashboard');
+    return;
+  }
+  
+  try {
+    final expiryDate = JwtDecoder.getExpirationDate(token);
+    final remaining = expiryDate.difference(DateTime.now());
+    
+    print('📱 Dashboard token expires in: ${remaining.inMinutes} minutes');
+    
+    // If token is already expired, refresh immediately
+    if (remaining.isNegative) {
+      print('🔄 Token already expired, refreshing now...');
+      await controller.refreshAccessToken();
+    } 
+    // If token expires in less than 10 minutes, refresh now
+    else if (remaining.inMinutes < 10) {
+      print('🔄 Token expiring soon, refreshing now...');
+      await controller.refreshAccessToken();
+    }
+    
+    // Start Dashboard timer
+    if (controller.isDashboardActive.value) {
+      controller.startDashboardTimer();
+    }
+    
+  } catch (e) {
+    print('❌ Error in Dashboard token initialization: $e');
+  }
+}
 
   @override
   void initState() {
     super.initState();
     _initializePlayer();
-    
-    HomeController controller=Get.find<HomeController>();
+      
+  controller.currentScreen.value = '/DashboardScreen';
+  controller.isDashboardOpen.value = true;
+  controller.isDashboardActive.value = true;
+  
+  // Start Dashboard-specific token monitoring
+  _startDashboardTokenMonitoring();
+
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    _initializeDashboardWithRefresh();
+  });
         controller.sectionidlessontype(sectionId:widget.section);
         var g=     controller.courses_lesson.map((e)=>(e.section?[widget.index]['lesson']).length).join();
         print('llllllllllll$g') ;
@@ -101,7 +152,7 @@ class _LecturenotpaidState extends State<Lecturenotpaid> {
         print('Buffering: $buffering');
       });
       await _player.open(
-        Media('http://10.1.12.66:3000/courses/play/${widget.courseId}'),
+        Media('${Applinks.baseurl}/courses/play/${widget.courseId}'),
         play: false, // Start paused
       );
          
@@ -481,6 +532,11 @@ class _LecturenotpaidState extends State<Lecturenotpaid> {
   @override
   void dispose() {
     _player.dispose();
+      _dashboardTokenTimer?.cancel();
+  _dashboardTokenTimer = null;
+  
+  controller.stopDashboardTimer();
+  controller.isDashboardActive.value = false;
     super.dispose();
   }
 
@@ -516,6 +572,30 @@ class _LecturenotpaidState extends State<Lecturenotpaid> {
   //   super.initState();
   //   // Example: print courseId when widget initializes
   // }
+  Timer? _dashboardTokenTimer;
+
+
+
+void _startDashboardTokenMonitoring() {
+  // Stop any existing timer
+  _dashboardTokenTimer?.cancel();
+  
+  // Check token every minute when in Dashboard
+  _dashboardTokenTimer = Timer.periodic(Duration(minutes: 1), (timer) {
+    if (mounted) {
+      controller.checkDashboardToken();
+    }
+  });
+}
+
+// @override
+// void dispose() {
+//   // Stop the Dashboard timer
+
+  
+//   super.dispose();
+// }
+
   bool selectedsection=false;
   bool selectpdf=false;
   bool selectexamsassiggnment=false;
@@ -842,7 +922,7 @@ List l=[];
   SizedBox(
             height: 40,  // width:1120
               width:isMobile?343: 1120,child:Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
          Container(child:Wrap(
             alignment: WrapAlignment.spaceBetween,
@@ -1057,7 +1137,7 @@ Column(
 selectpdf==false&&
 selectexamsassiggnment==true&&selectpdf==false
 ?
-Image.asset('icons/Component232.png',cacheWidth: 32,cacheHeight: 32,):
+Image.asset('icons/Component232_2.png',cacheWidth: 32,cacheHeight: 32,):
 Image.asset('assets/Component234.png',cacheWidth: 32,cacheHeight: 32,)
 ,
 Text('الامتحنات والواجبات',style: TextStyle(fontWeight: 
@@ -1128,7 +1208,7 @@ Column(
 selectpdf==false&&
 selectexamsassiggnment==true?
 Image.asset('icons/Component9232.png',cacheWidth: 32,cacheHeight: 32,):
-Image.asset('assets/Component232.png',cacheWidth: 32,cacheHeight: 32,)
+Image.asset('assets/Component232_1.png',cacheWidth: 32,cacheHeight: 32,)
 ,
 Text('pdf',style: TextStyle(fontWeight: FontWeight.w500,fontSize:isMobile?12:16,
 color: selectedsection==true&&contentsection==false&&
@@ -1243,7 +1323,7 @@ Column(
 selectedsection==true&&
 selectpdf==false&&
 selectexamsassiggnment==false?
-Image.asset('icons/Component232.png',cacheWidth: 32,cacheHeight: 32,):
+Image.asset('icons/Component232_2.png',cacheWidth: 32,cacheHeight: 32,):
 Image.asset('icons/Component9232.png',cacheWidth: 32,cacheHeight: 32,)
 ,
 Text('المحاضرات',style: TextStyle(fontWeight: FontWeight.w500,fontSize:isMobile?12:16,color:
@@ -1546,7 +1626,7 @@ List.generate(controller.lessonQuestions.length,(indexlesson){
       //  Navigator.push(context, MaterialPageRoute(builder: (context) => ExamresultAnswerSheet(lessonIds:lessonId)));
       } else {
         print('Navigating to Assignment2');
-        Get.to( Assignment2(lessonIds: lessonId,));
+        Get.to( assignment2(lessonIds: lessonId,));
         // Navigator.push(context, MaterialPageRoute(builder: (context) => Assignment2(lessonIds: lessonId,)));
       }}}
   );  print( ' mode${controller.lessonQuestions.map((e)=>e.questions?.map((e)=>e.type_ques).join()).join()}');
@@ -2630,14 +2710,14 @@ Widget _buildFooter(BuildContext context) {
                           fontSize: 20,
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      _buildInfoRow('icons/location.png',
-                          '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
-                      const SizedBox(height: 12),
-                      _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
-                      const SizedBox(height: 12),
-                      _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
-                      const SizedBox(height: 12),
+                      // const SizedBox(height: 16),
+                      // _buildInfoRow('icons/location.png',
+                      //     '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
+                      // const SizedBox(height: 12),
+                      // _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
+                      // const SizedBox(height: 12),
+                      // _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
+                      // const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [

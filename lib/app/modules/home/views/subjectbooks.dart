@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
-import 'package:my_app/app/models/wallet.dart';
 import 'package:my_app/app/modules/home/controllers/home_controller.dart';
-import 'package:my_app/app/modules/home/views/homeafterlogin.dart';
-import 'package:my_app/app/modules/home/views/mennimenue.dart';
-import 'package:my_app/app/modules/home/views/menuebar%20paym.dart';
+import 'package:my_app/app/modules/home/controllers/subjectbooks2.dart';
+import 'package:my_app/app/modules/home/views/Schudle_for_the_exam%20.dart';
+import 'package:my_app/app/modules/home/views/aboutashtar.dart';
+import 'package:my_app/app/modules/home/views/mainpagecopy.dart';
+import 'package:my_app/app/modules/home/views/mennimenue.dart' show mennimenu;
+import 'package:my_app/app/modules/home/views/profile.dart';
+import 'package:my_app/app/modules/home/views/schedule_center.dart';
 import 'package:my_app/app/modules/home/views/settings.dart';
 import 'package:my_app/app/modules/home/views/subject.dart';
-
+import 'package:my_app/app/modules/home/views/subjecttype.dart';
+import 'package:my_app/app/routes/app_pages.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
+import '';
 class Subjectbooks extends StatefulWidget {
   const Subjectbooks({super.key});
 
@@ -21,13 +28,14 @@ class _HomeafterloginState extends State<Subjectbooks> {
 
 
 PageController _pageController=PageController(
-    viewportFraction: 0.22, 
+    viewportFraction: 0.22, // ~1 / 4.5
 initialPage: 1
 
 );
 int _currentPage=0;
   @override
   Widget build(BuildContext context) {
+
 
   void scrollToIndex(int index) {
     _pageController.animateToPage(
@@ -50,61 +58,61 @@ int _currentPage=0;
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              
+              // Logo
        InkWell( onTap: (){
-     showDialog(
+ showDialog(
       context: context,
       barrierColor: Colors.transparent, 
-      builder: (context) => const mennimenu(),
+      builder: (context) => mennimenu(),
     );
        
 
        }, child:  Icon(Icons.menu, color:Colors.white ,))   
 ,
-              
+              // Buttons
               Row(
                 children: [
-              Image.asset('assets/Group87935.png', width: 55),
+              Image.network('https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/assets/Group87935.png', width: 55),
                 ],
               ),
             ],
           ),
         )
       
+// AppBar(
+//           automaticallyImplyLeading: false,
+//           backgroundColor: const Color.fromARGB(255, 6, 70, 152),
+//           elevation: 0,
+//           title: Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//             children: [
+//               // Logo
+//               Image.network(
+//                 'assets/logo.png',
+//                 height: 40,
+//               ),
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//               // Buttons
+//               Row(
+//                 children: [
+//                   _buildAppBarButton(
+//                     label: 'تسجيل دخول',
+//                     onPressed: () {},
+//                     backgroundColor: Colors.white,
+//                     textColor: const Color.fromARGB(255, 6, 70, 152),
+//                   ),
+//                   const SizedBox(width: 10),
+//                   _buildAppBarButton(
+//                     label: 'إنشاء حساب',
+//                     onPressed: () {},
+//                     backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+//                     textColor: const Color.fromARGB(255, 6, 70, 152),
+//                   ),
+//                 ],
+//               ),
+//             ],
+//           ),
+//         )
    
 
    
@@ -115,7 +123,7 @@ int _currentPage=0;
         backgroundColor: const Color.fromARGB(255, 6, 69, 152),
         title: Center(
           child: Container(
-            
+            // width: screenWidth * 0.95,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -125,18 +133,28 @@ int _currentPage=0;
                         
                         width: 40,
                         height: 40,
-                        child: CircleAvatar(
+                        child:InkWell(
+                          onTap: (){
+                            HomeController controller=Get.find();
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+    controller.currentScreen.value = '/Profile';
+    
+    controller.startTokenMonitoring();
+  });   Get.toNamed(Routes.PROFILE);
+                            // Navigator.push(context, MaterialPageRoute(builder: (context){return Profile();}));
+                          },
+                          child:  CircleAvatar(
                           
                           radius: 24,
-                          
-                          
+                          // backgroundImage: NetworkImage('${controller.img}')==null
+                          // ? NetworkImage('${controller.img2}'): NetworkImage('${controller.img}'),
                         ),
                       ),
-                    Image.asset('icons/Vector_3.png',width: 40,height: 41,),
-                    Image.asset('icons/Vector_2.png',width: 39.02,height: 40,)
-                    
-                    
-                    
+                     ), Image.network('https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/icons/Vector_3.png',width: 40,height: 41,),
+                    Image.network('https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/icons/Vector_2.png',width: 39.02,height: 40,)
+                    // _buildButton('تسجيل دخول', isPrimary: true),
+                    // const SizedBox(width: 12),
+                    // _buildButton('انشاء حساب'),
                   ],
                 ),
                 if (!isMobile)
@@ -150,7 +168,7 @@ int _currentPage=0;
                       _navText('ذاكر'),
                       _navText('الرئيسية', highlight: true),
                       const SizedBox(width: 12),
-                      Image.asset('assets/Group87935.png', width: 55),
+                      Image.network('https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/assets/Group87935.png', width: 55),
                     ],
                   ),
               ],
@@ -158,12 +176,8 @@ int _currentPage=0;
           ),
         ),
       ),
-      body:GetBuilder<HomeController>(
-      
-      builder: (controller){
-        
-        
-        return SingleChildScrollView(
+      body:GetBuilder(init: HomeController()
+      ,builder: (controller){return SingleChildScrollView(
         child: Column(
           children: [
           Wrap(
@@ -190,155 +204,120 @@ int _currentPage=0;
             ),
            
      
-          
+            // Wrap(
+            //   spacing: 16,
+            //   runSpacing: 16,
+            //   alignment: WrapAlignment.center,
+            //   children: [
     
   SizedBox(height: 24,)
         ,
-          Container( 
-            child:Column(
+          Container(child:Column(
             spacing: 24,
             children: [
           Container(child: Row(spacing: 1,
             mainAxisAlignment: MainAxisAlignment.start,
-            children: [ InkWell(
-          onTap: () {
-            Navigator.push(context,MaterialPageRoute(builder: (context){return Homeafterlogin();}));
-          },
-          child:  Text('الرئيسية',style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: Color.fromARGB(255, 181, 181, 181)),
-          ), ) ,
-        Container(width: 18,height: 18,decoration: BoxDecoration(),      child: Icon
-            (Icons.arrow_forward_ios,color: Color.fromARGB(255, 181, 181, 181))),
-         
-           Text('الصف الثالث الثانوي',style: TextStyle(fontSize: 16,fontWeight:
-            FontWeight.w400,color:Color.fromARGB(255, 6, 69, 152)),
+            children: [
+         Text('اختار نشاطك',style: TextStyle(color: Color.fromARGB(255, 6, 69, 152)),)
+            ,
             
-            ),
+            Container(width: 18,height: 18,decoration: BoxDecoration(),      child: Icon
+            (Icons.arrow_back_ios,color: Color.fromARGB(255, 181, 181, 181)),)
+      ,
+           
+            Text('اختار نشاطك',style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: Color.fromARGB(255, 181, 181, 181)),)
+          
+          
+            ,  Container(width: 18,height: 18,decoration: BoxDecoration(),      child: Icon
+            (Icons.arrow_back_ios,color: Color.fromARGB(255, 181, 181, 181)),),
+            Text('الفيزياء',style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: Color.fromARGB(255, 181, 181, 181)),)
+            ,  Container(width: 18,height: 18,decoration: BoxDecoration(),      child: Icon
+            (Icons.arrow_back_ios,color: Color.fromARGB(255, 181, 181, 181)),),
+             Text('الصف الثالث الثانوي',style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: Color.fromARGB(255, 181, 181, 181)),
+            
+            ),  Container(width: 18,height: 18,decoration: BoxDecoration(),      child: Icon
+            (Icons.arrow_back_ios,color: Color.fromARGB(255, 181, 181, 181))),
+            Text('الرئيسية',style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: Color.fromARGB(255, 181, 181, 181)),
+          ), 
+          
           ],),)  
            ,
            SizedBox(width:1120,child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            AutoTranslateText(text:'اختار مادتك',weight: FontWeight.w600,
-           fontSize: 32,color: Color.fromARGB(255, 6, 69, 152))
+            Text('اختيار نشاطك',textAlign: TextAlign.start,textDirection: TextDirection.rtl,style: TextStyle(fontWeight: FontWeight.w600,
+           fontSize: 32,color: Color.fromARGB(255, 6, 69, 152)),)
            ,SizedBox(width: 1120,child:Row(spacing: 16, children: [
-            
+            // Image.network('assets/')
            ],) ,)
            
            ],)),
-            SizedBox(width: 1120,child:Column(
+            SizedBox(
+              // width:1120
+              width: 1120,child:Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-     
-                                     ],)),
-     Container(width: 1123, child: Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
+         Container(child:Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+            Text('مستوى التقدم فى الماده',style: TextStyle(color: Color.fromARGB(255, 80, 124, 181), fontSize: 16, fontWeight: FontWeight.w400),),
+            Text('77% مكتمل',style: TextStyle(color: Color.fromARGB(255, 80, 124, 181), fontSize: 12, fontWeight: FontWeight.w400)),
+       ],) ), 
+Container(  width: screenWidth,  child:
+  Wrap( alignment: WrapAlignment.center,  children:
+   [ new LinearPercentIndicator( width:isMobile? screenWidth:1120, lineHeight: 8.0,
+    barRadius: Radius.circular(16), percent: 0.2, alignment:
+     MainAxisAlignment.end, isRTL: true, progressColor: Color.fromARGB(255, 77, 195, 44)) ,])    ,
 
+                         )                                          ],)),
+     Container(width: 1123, child: Column(children: [
 Wrap(
-  spacing: 16,
-  alignment: WrapAlignment.center,
-  children: [
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  ListView.builder(
-  shrinkWrap: true,
-  physics: NeverScrollableScrollPhysics(),
-  itemCount: controller.courses.length,
-  itemBuilder: (context, courseIndex) {
-
-return FutureBuilder<bool>(
-    future: controller.checkEnrollment(controller.courses[courseIndex].id!),
-    builder: (context, snapshot){  bool enrolled = snapshot.data ?? false; return InkWell(
-    onTap: () async {
-     Course? selectedCourse=Course();
-controller.addcoursetocart(id:controller.courses[courseIndex].id!);
-      controller.profileData!['balance'];
-      
-      await controller.fetchcourseinfo(controller.courses[courseIndex].id.toString());
-  controller.courses.map((course) => GestureDetector(
-  onTap: () {
-    setState(() {
-      selectedCourse = course; 
-    });
-    print("Selected price: ${course.price}");
-  },
-  child: AutoTranslateText(text:"${course.name} - ${course.price} ج.م"),
-));
-
-      
-      
-    
-  final allCourseInfos = controller.courses2
-          .where((c) => c.id == controller.courses[courseIndex].id)
-          .expand((c) => c.course_info ?? [])
-          .toList();
-
-          
-    enrolled==false?  Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => subject(
-            courseId: controller.courses[courseIndex].id.toString(),
-            courseInfos: allCourseInfos,
-          ),
-        ),
-      ):  showDialog(context: context, builder: (context){return  Menuebarpaym(
-        
-        course_id:controller.courses[courseIndex].id!,
-        price: controller.courses[courseIndex].price! 
-          );}) ; 
-    },
-  child: _buildClassCard(
-  '${controller.courses[courseIndex].name}',
-  context,
-  imageWidget: 
-       Image.asset(
-        enrolled==false
-            ? 'assets/Frame1597882438_7.png'
-            : 'assets/Frame1597882438_6.png',
-        fit: BoxFit.cover,
-      )
-  
-)
-
-  
-  );} ); })],
-
-),
+                 spacing: 16, 
+                  alignment:WrapAlignment.center,
+                  children: [ 
+                    
+                    
+                InkWell(child:       _buildClassCard('احجز ملازمك', 'https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/assets/use4.png',context),
+                onTap: (){  //Navigator.push(context, MaterialPageRoute(builder: (context){return subjectBooks2();}));
+                Get.to(subjectBooks2());
+                }, ), _buildClassCard('المحاضرات المباشره', 'https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/assets/use5.png',context),
+             InkWell( onTap: (){
+              Get.toNamed(Routes.SUBJECTTYPE);
+//               Navigator.push(context, MaterialPageRoute(builder: (context){
+// controller.fetchcourseinfo();
+//               return Subjecttype();
+//              }));
+             }, child: _buildClassCard('شوف محاضراتك', 'https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/assets/use7.png',context),)  
+                ],),
+Wrap(
+                 spacing: 16, 
+                  alignment: WrapAlignment.center,
+                  children: [
+           InkWell(child:      _buildClassCard('احجز امتحانك الشامل', 'https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/assets/use1.png',context),
+                   onTap: () {Get.to( SchudleForTheExam());
+                    //  Navigator.push(context, MaterialPageRoute(builder: (context){
+                    //   return SchudleForTheExam();
+                    //  }));
+                   }, ), InkWell(child: _buildClassCard('احجز السنتر','https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/assets/use3.png',context),onTap:
+                    (){
+                Get.to(schedule_center());                
+                  //  Navigator.push(context, MaterialPageRoute(builder: (context){return schedule_center();}));
+                  },) ,
+                
+                ],),
             SizedBox(height: 24,)
           ],),)
           ],) ,width: 1123, ),
       
             _buildFooter(context),
             const SizedBox(height: 10),
-            const AutoTranslateText(text: 
+            const Text(
               'Copyright © 2023 Ashtar App | Terms of Use | Privacy Policy',
-            weight: FontWeight.w400,
+              style: TextStyle(
+                fontWeight: FontWeight.w400,
                 fontSize: 14,
                 color: Color.fromARGB(255, 6, 69, 152),
-              
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
@@ -394,89 +373,77 @@ controller.addcoursetocart(id:controller.courses[courseIndex].id!);
       ),
     );
   }
-
- Widget _buildClassCard(String title, BuildContext context, {required Widget imageWidget}) {
-  final screenWidth = MediaQuery.of(context).size.width;
-  return Column(
-    children: [
+   Widget _buildClassCard(String title, String imagePath,context) {
+    final screenWidth=MediaQuery.of(context).size.width;
+    return Column(children: [ 
       Container(
-        width: 363,
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 212, 221, 232),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              height: 180,
-              width: screenWidth,
-              padding: const EdgeInsets.all(8),
-              child: imageWidget, 
-            ),
-          ],
-        ),
+      width: 363,
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 212, 221, 232),
+        borderRadius: BorderRadius.circular(16),
       ),
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(
-          title,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 20,
-            color: Color.fromARGB(255, 6, 69, 152),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            height: 180,width:screenWidth,
+            padding: const EdgeInsets.all(8),
+            child: Image.network(imagePath, fit: BoxFit.contain),
           ),
-        ),
+         
+        ],
       ),
-    ],
-  );
-}
+    )
+    , Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 20,
+                color: Color.fromARGB(255, 6, 69, 152),
+              ),
+            ),
+          ),
+    ],); 
+   
+  }
 
-  Widget _navText(String text, {bool highlight = false}) {
+ Widget _navText(String text, {bool highlight = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w400,
-          color: highlight
-              ? const Color.fromARGB(255, 242, 195, 42)
-              : const Color.fromARGB(255, 181, 181, 181),
-        ),
-      ),
+      child: AutoTranslateText(weight: FontWeight.w400 , fontSize: 18,text: text,highlight: highlight,color:  const Color.fromARGB(255, 181, 181, 181),)
     );
   }
 
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+  // Widget _buildClassCard(String title, String imagePath) {
+  //   return Container(
+  //     width: 362,
+  //     decoration: BoxDecoration(
+  //       color: const Color.fromARGB(255, 212, 221, 232),
+  //       borderRadius: BorderRadius.circular(16),
+  //     ),
+  //     child: Column(crossAxisAlignment: CrossAxisAlignment.center,
+  //       children: [
+  //         Container(
+  //           height: 150,
+  //           padding: const EdgeInsets.all(8),
+  //           child: Image.network(imagePath, fit: BoxFit.contain),
+  //         ),
+  //         Padding(
+  //           padding: const EdgeInsets.all(8.0),
+  //           child: Text(
+  //             title,
+  //             style: const TextStyle(
+  //               fontWeight: FontWeight.w600,
+  //               fontSize: 20,
+  //               color: Color.fromARGB(255, 6, 69, 152),
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildTeacherInfo(bool isMobile,screenWidth) {
     return Container(
@@ -484,7 +451,7 @@ width: !isMobile?1120:screenWidth,      padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Image.asset('assets/Frame_10.png', width: 43, height: 40),
+          Image.network('https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/assets/Frame_10.png', width: 43, height: 40),
           const SizedBox(height: 8),
           const Text(
             'الأستاذ شريف البدري',
@@ -537,7 +504,7 @@ Widget _buildFooter(BuildContext context) {
               runSpacing: 24,
               spacing: 24,
               children: [
-                
+                // Column: Contact Us Section
                 SizedBox(
                   width: screenWidth < 600 ? double.infinity : 500,
                   child: Column(
@@ -552,23 +519,23 @@ Widget _buildFooter(BuildContext context) {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      _buildInfoRow('icons/location.png',
+                      _buildInfoRow('https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/icons/location.png',
                           '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
                       const SizedBox(height: 12),
-                      _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
+                      _buildInfoRow('https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/icons/Phone.png', '+20 106 662 0129'),
                       const SizedBox(height: 12),
-                      _buildInfoRow('icons/sms (1).png', 'support@ashtar.app'),
+                      _buildInfoRow('https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/icons/sms_1.png', 'support@ashtar.app'),
                       const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          _icon('icons/Frame_14.png'),
+                          _icon('https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/icons/Frame_14.png'),
                           const SizedBox(width: 12),
-                          _icon('icons/Frame_13.png'),
+                          _icon('https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/icons/Frame_13.png'),
                           const SizedBox(width: 12),
-                          _icon('icons/Frame_12.png'),
+                          _icon('https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/icons/Frame_12.png'),
                           const SizedBox(width: 12),
-                          _icon('icons/Frame_11.png'),
+                          _icon('https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/icons/Frame_11.png'),
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -583,26 +550,29 @@ Widget _buildFooter(BuildContext context) {
                       const SizedBox(height: 12),
                       Row(
                 mainAxisAlignment: MainAxisAlignment.end,        children: [
-                          _storeButton('icons/Frame_16.png', 'Google play'),
-                          const SizedBox(width: 8),
-                          _storeButton('icons/Frame_15.png', 'App Store'),
+                          _storeButton('https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/icons/Frame_16.png', 'Google play'),
+                          const SizedBox(width: 12),
+                          _storeButton('https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/icons/Frame_15.png', 'App Store'),
                         ],
                       )
                     ],
                   ),
                 ),
 
-                
+                // Column: About Section
                 SizedBox(
                   width: screenWidth < 600 ? double.infinity : 600,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Wrap(
-                        alignment: WrapAlignment.start,
+                        alignment: WrapAlignment.end,
                         spacing: 24,
                         children: [
-                          _navItem('عن أشطر'),
+                         InkWell(onTap: (){
+                          Get.to(Aboutashtar());
+                          // Navigator.push(context, MaterialPageRoute(builder: (context){return Aboutashtar(); }));
+                         },child:_navItem('عن أشطر') ,) ,
                           _navItem('مصادري'),
                           _navItem('كورساتى'),
                           _navItem('مدرسينا'),
@@ -615,8 +585,8 @@ Widget _buildFooter(BuildContext context) {
                       const SizedBox(height: 24),
                       Align(
                         alignment: Alignment.centerRight,
-                        child: Image.asset(
-                          'assets/Group87935.png',
+                        child: Image.network(
+                          'https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/assets/Group87935.png',
                           width: 80,
                           height: 65.7,
                         ),
@@ -653,8 +623,8 @@ Widget _buildFooter(BuildContext context) {
 }
 
 Widget _buildInfoRow(String iconPath, String text) {
-  return Wrap(
-    alignment: WrapAlignment.end,
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.end,
     children: [
       Column(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -667,13 +637,13 @@ Widget _buildInfoRow(String iconPath, String text) {
         ],
       ),
       const SizedBox(width: 8),
-      Image.asset(iconPath, width: 24, height: 24),
+      Image.network(iconPath, width: 24, height: 24),
     ],
   );
 }
 
 Widget _icon(String path) {
-  return Image.asset(path, width: 24, height: 24);
+  return Image.network(path, width: 24, height: 24);
 }
  Widget menuButton(BuildContext context, String label, Color bgColor, Color textColor) {
     return SizedBox(
@@ -681,7 +651,7 @@ Widget _icon(String path) {
       child: ElevatedButton(
         onPressed: () {
           Navigator.pop(context);
-          
+          // Add navigation here if needed
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: bgColor,
@@ -733,7 +703,7 @@ Widget _storeButton(String iconPath, String label) {
     ),
     child: Row(
       children: [
-        Image.asset(iconPath, width: 40, height: 40),
+        Image.network(iconPath, width: 40, height: 40),
         const SizedBox(width: 8),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -748,7 +718,8 @@ Widget _storeButton(String iconPath, String label) {
 }
 
 Widget _navItem(String title,
-    {Color color = const Color.fromARGB(255, 181, 181, 181),
+    {
+      Color color = const Color.fromARGB(255, 181, 181, 181),
     double fontSize = 20}) {
   return Text(
     title,

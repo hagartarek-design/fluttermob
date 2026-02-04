@@ -28,14 +28,14 @@ import 'package:my_app/app/modules/home/views/subjectbooks.dart';
 import 'package:my_app/app/modules/home/views/subjecttype.dart';
 import 'wallet_cart.dart';
 
-class mySections extends StatefulWidget {
-  const mySections({super.key});
+class MySections extends StatefulWidget {
+  const MySections({super.key});
 
   @override
-  State<mySections> createState() => _mySectionsState();
+  State<MySections> createState() => _MySectionsState();
 }
 
-class _mySectionsState extends State<mySections> {
+class _MySectionsState extends State<MySections> {
   var selectedSection = Rx<String?>(null);
   var selected = false.obs;
   var selected1 = false.obs;
@@ -442,13 +442,13 @@ class _mySectionsState extends State<mySections> {
               fontSize: 20,
             ),
           ),
-          const SizedBox(height: 16),
-          _buildInfoRow('icons/location.png', '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
-          const SizedBox(height: 12),
-          _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
-          const SizedBox(height: 12),
-          _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
-          const SizedBox(height: 12),
+          // const SizedBox(height: 16),
+          // _buildInfoRow('icons/location.png', '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
+          // const SizedBox(height: 12),
+          // _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
+          // const SizedBox(height: 12),
+          // _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
+          // const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [

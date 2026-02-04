@@ -675,7 +675,7 @@ InkWell(
 Column(
   spacing: 8,
   crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.center, children: [
-Image.asset('assets/Component232.png',width: 32,height: 32,)
+Image.asset('assets/Component232_1.png',width: 32,height: 32,)
 ,Text('pdf',style: TextStyle(fontWeight: FontWeight.w500,fontSize:16,
 color: Color.fromARGB(255, 242, 195, 42)
 
@@ -835,7 +835,7 @@ print('Content items: $contentList');
 Column(
   spacing: 8,
   crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.center, children: [
-Image.asset('assets/Component232.png',width: 32,height: 32,)
+Image.asset('assets/Component232_1.png',width: 32,height: 32,)
 ,Text('المحاضرات',style: TextStyle(fontWeight: FontWeight.w500,fontSize:16,color: Color.fromARGB(255, 6, 182, 141)),)
 
 ],)
@@ -1519,14 +1519,14 @@ Widget _buildFooter(BuildContext context,isMobile) {
                           fontSize: 20,
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      _buildInfoRow('icons/location.png',
-                          '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
-                      const SizedBox(height: 12),
-                      _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
-                      const SizedBox(height: 12),
-                      _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
-                      const SizedBox(height: 12),
+                      // const SizedBox(height: 16),
+                      // _buildInfoRow('icons/location.png',
+                      //     '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
+                      // const SizedBox(height: 12),
+                      // _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
+                      // const SizedBox(height: 12),
+                      // _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
+                      // const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [

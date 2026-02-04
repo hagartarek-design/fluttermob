@@ -1,21 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:my_app/app/modules/home/controllers/home_controller.dart';
 import 'package:my_app/app/modules/home/views/addedto.dart';
 import 'package:my_app/app/modules/home/views/emptycart.dart';
 import 'package:my_app/app/modules/home/views/mainpage.dart';
-import 'package:my_app/app/modules/home/views/myExam.dart' show Myexam;
+import 'package:my_app/app/modules/home/views/myExam.dart';
+
 import 'package:my_app/app/modules/home/views/mybooks.dart';
 import 'package:my_app/app/modules/home/views/mycourses.dart';
-import 'package:my_app/app/modules/home/views/myquestionask.dart' show myquestionask;
+import 'package:my_app/app/modules/home/views/myquestionask.dart' show MyQuestionAsk, myquestionask;
 import 'package:my_app/app/modules/home/views/profile.dart';
-import 'package:my_app/app/modules/home/views/sections.dart';
+import 'package:my_app/app/modules/home/views/MySections.dart';
 import 'package:my_app/app/modules/home/views/settings.dart';
-import 'package:my_app/app/modules/home/views/wallet.dart';
+import 'package:my_app/app/modules/home/views/Wallet.dart';
 import 'package:my_app/app/modules/home/views/walletMobile.dart';
-
-class mennimenu extends StatelessWidget {
+import 'package:my_app/app/routes/app_pages.dart';
+class mennimenu extends StatefulWidget {
   const mennimenu({super.key});
 
+  @override
+  State<mennimenu> createState() => _mennimenuState();
+}
+
+class _mennimenuState extends State<mennimenu> {
+  
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -129,7 +137,7 @@ class mennimenu extends StatelessWidget {
             
             {
             controller.  fetchSections();
-              return mySections();})); },) ,
+              return MySections();})); },) ,
        InkWell(child: _buildMenuItem(
               Icons.arrow_back_ios,
               "ملازمي",
@@ -137,9 +145,10 @@ class mennimenu extends StatelessWidget {
               isSmallScreen: isSmallScreen
             ),
             onTap: (){
-             Navigator.push(context, MaterialPageRoute(builder: (context){
-                return myBooks();
-              }));
+              Get.toNamed(Routes.MYBOOKS);
+            //  Navigator.push(context, MaterialPageRoute(builder: (context){
+            //     return myBooks();
+            //   }));
             },
             )  
          ,
@@ -150,10 +159,13 @@ class mennimenu extends StatelessWidget {
               
             ),
       onTap: (){
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-  return Material(child: Myexam());
-}));
-
+//       Navigator.push(context, MaterialPageRoute(builder: (context) {
+//   return Material(child: MyExam());
+// }));
+ setState(() {
+      Get.toNamed(Routes.MYEXAM);    
+//  controller.smartSolveNavigate(Routes.MYEXAM);
+        });
             }
       
             ),
@@ -164,7 +176,7 @@ class mennimenu extends StatelessWidget {
               isSmallScreen: isSmallScreen
             ) ,onTap: (){
 
-            Navigator.push(context, MaterialPageRoute(builder: (context){return myquestionask();}));
+            Navigator.push(context, MaterialPageRoute(builder: (context){return MyQuestionAsk();}));
 
             },)  
          ,

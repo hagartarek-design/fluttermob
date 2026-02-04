@@ -3425,16 +3425,16 @@ import 'home_controller.dart';
 
 
 
-class Assignment2 extends StatefulWidget {
+class assignment2 extends StatefulWidget {
  final lessonIds;
-   Assignment2({super.key,required this.lessonIds});
+   assignment2({super.key,required this.lessonIds});
 
   @override
   
-  _Assignment2ViewerState createState() => _Assignment2ViewerState();
+  _assignment2ViewerState createState() => _assignment2ViewerState();
 }
 
-class _Assignment2ViewerState extends State<Assignment2> {
+class _assignment2ViewerState extends State<assignment2> {
   int currentIndex = 1;
 bool showAnswers = false;   bool trueAnswer = false;
   int ids = 0;
@@ -4077,7 +4077,7 @@ List.generate(controller.lessonQuestions.length,(indexlesson){
        Navigator.push(context, MaterialPageRoute(builder: (context) => ExamresultAnswerSheet(lessonIds:widget.lessonIds)));
       } else {
         print('Navigating to Assignment2');
-        Navigator.push(context, MaterialPageRoute(builder: (context) => Assignment2(lessonIds: widget.lessonIds,)));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => assignment2(lessonIds: widget.lessonIds,)));
       }}}
   );},
   
@@ -4388,14 +4388,14 @@ List.generate(controller.lessonQuestions.length,(indexlesson){
                             fontSize: 20,
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        _buildInfoRow('icons/location.png',
-                            '26 Street 261, عزبة فهمي، قسم المعادي، محافظة '),
-                        const SizedBox(height: 12),
-                        _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
-                        const SizedBox(height: 12),
-                        _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
-                        const SizedBox(height: 12),
+                        // const SizedBox(height: 16),
+                        // _buildInfoRow('icons/location.png',
+                        //     '26 Street 261, عزبة فهمي، قسم المعادي، محافظة '),
+                        // const SizedBox(height: 12),
+                        // _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
+                        // const SizedBox(height: 12),
+                        // _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
+                        // const SizedBox(height: 12),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [

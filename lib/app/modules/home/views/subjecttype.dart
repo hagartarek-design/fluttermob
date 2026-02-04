@@ -12,6 +12,7 @@ import 'package:my_app/app/modules/home/views/menuebar%20paym.dart';
 import 'package:my_app/app/modules/home/views/settings.dart';
 import 'package:my_app/app/modules/home/views/subject.dart';
 import 'package:my_app/app/modules/home/views/subjecttype.dart';
+import 'package:my_app/app/routes/app_pages.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import '';
 class Subjecttype extends StatefulWidget {
@@ -268,12 +269,8 @@ Wrap(
 
 
 
-  ListView.builder(
-  shrinkWrap: true,
-  physics: NeverScrollableScrollPhysics(),
-  itemCount: controller.courses.length,
-  itemBuilder: (context, courseIndex) {
 
+   ... List.generate(controller.courses.length, (courseIndex) {
 return FutureBuilder<bool>(
     future: controller.checkEnrollment(controller.courses[courseIndex].id!),
     builder: (context, snapshot){  bool enrolled = snapshot.data ?? false; return InkWell(
@@ -281,56 +278,79 @@ return FutureBuilder<bool>(
      Course? selectedCourse=Course();
 controller.addcoursetocart(id:controller.courses[courseIndex].id!);
       controller.profileData!['balance'];
-      
+      // Fetch data for this specific course
       await controller.fetchcourseinfo(controller.courses[courseIndex].id.toString());
   controller.courses.map((course) => GestureDetector(
   onTap: () {
     setState(() {
-      selectedCourse = course; 
+      selectedCourse = course; // save the clicked course
     });
     print("Selected price: ${course.price}");
   },
   child: AutoTranslateText(text:"${course.name} - ${course.price} ج.م"),
 ));
 
-      
-      
-    
+      // Get all course_info for that course id
+      // print('prices:${price}');
+    // HomeController cont/roller =HomeController();
   final allCourseInfos = controller.courses2
           .where((c) => c.id == controller.courses[courseIndex].id)
           .expand((c) => c.course_info ?? [])
           .toList();
-
-          
-    enrolled==false?  Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => subject(
-            courseId: controller.courses[courseIndex].id.toString(),
-            courseInfos: allCourseInfos,
-          ),
-        ),
-      ):  showDialog(context: context, builder: (context){return  Menuebarpaym(
+//  Navigator.push(
+//         context,
+//         MaterialPageRoute(
+//           builder: (context) => subject(
+//             courseId: controller.courses[courseIndex].id.toString(),
+//             courseInfos: allCourseInfos,
+//           ),
+//         ),
+//       )
+          // print('wewewe${allCourseInfos.map((e)=>e['id'])}');
+          print(controller.courses[courseIndex].id.toString());
+          print(allCourseInfos);
+    enrolled==false? Get.toNamed(
+  Routes.SUBJECT,
+  arguments: {
+    'courseId': controller.courses[courseIndex].id.toString(),
+    'courseInfos': allCourseInfos,
+  },
+)
+:  showDialog(context: context, builder: (context){return  Menuebarpaym(
         
         course_id:controller.courses[courseIndex].id!,
         price: controller.courses[courseIndex].price! 
           );}) ; 
+          // final price=  controller.courses[courseIndex].price;
+      // Get all course_info for that course id
+      // print('prices:${price}');
+      // setState(() {
+      //   price;
+      // });
     },
-  child: _buildClassCard(
+  child:
+  _buildClassCard(
   '${controller.courses[courseIndex].name}',
   context,
   imageWidget: 
-       Image.asset(
+    // snapshot.connectionState == ConnectionState.waiting?
+    //      Image.network('assets/loading.png'):
+     
+    //   snapshot.hasError?
+    //    Image.network('assets/error.png'):
+      
+       Image.network(
         enrolled==false
-            ? 'assets/Frame1597882438_7.png'
-            : 'assets/Frame1597882438_6.png',
+            ? 'https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/assets/Frame1597882438_7.png'
+            : 'https://media.githubusercontent.com/media/hagartarek-design/webflutter/refs/heads/main/assets/Frame1597882438_6.png',
         fit: BoxFit.cover,
       )
   
 )
-
   
-  );} ); })],
+  );} ); }
+  )],
+    
 
 ),
             SizedBox(height: 24,)
@@ -557,14 +577,14 @@ Widget _buildFooter(BuildContext context) {
                           fontSize: 20,
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      _buildInfoRow('icons/location.png',
-                          '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
-                      const SizedBox(height: 12),
-                      _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
-                      const SizedBox(height: 12),
-                      _buildInfoRow('icons/sms (1).png', 'support@ashtar.app'),
-                      const SizedBox(height: 12),
+                      // const SizedBox(height: 16),
+                      // _buildInfoRow('icons/location.png',
+                      //     '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
+                      // const SizedBox(height: 12),
+                      // _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
+                      // const SizedBox(height: 12),
+                      // _buildInfoRow('icons/sms (1).png', 'support@ashtar.app'),
+                      // const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [

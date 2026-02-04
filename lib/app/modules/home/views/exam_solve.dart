@@ -3,10 +3,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:my_app/app/models/wallet%20copy%204.dart';
 import 'package:my_app/app/modules/home/views/my.dart';
 import 'package:my_app/app/modules/home/views/myExam.dart';
+import 'package:my_app/app/routes/app_pages.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../controllers/home_controller.dart';
 
 class ExamSolve extends StatefulWidget {
@@ -26,6 +29,82 @@ class _ExamSolveViewerState extends State<ExamSolve> {
     viewportFraction: 0.22,
     initialPage: 1,
   );
+
+HomeController controller=Get.find();
+
+ Timer? _dashboardTokenTimer;
+
+// @override
+// void initState() {
+//   super.initState();
+  
+
+// }
+
+void _startDashboardTokenMonitoring() {
+  // Stop any existing timer
+  _dashboardTokenTimer?.cancel();
+  
+  // Check token every minute when in Dashboard
+  _dashboardTokenTimer = Timer.periodic(Duration(minutes: 1), (timer) {
+    if (mounted) {
+      controller.checkDashboardToken();
+    }
+  });
+}
+
+@override
+void dispose() {
+    _timer?.cancel();
+
+  // Stop the Dashboard timer
+  _dashboardTokenTimer?.cancel();
+  _dashboardTokenTimer = null;
+  
+  controller.stopSolvetimer();
+  controller.isSolveActive.value = false;
+  
+  super.dispose();
+}
+
+ Future<void> _initializeDashboardWithRefresh() async {
+  print('📱 DashboardScreen - Initializing with auto-refresh');
+  
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
+  
+  if (token == null || token.isEmpty) {
+    print('⚠️ No token in Dashboard');
+    return;
+  }
+  
+  try {
+    final expiryDate = JwtDecoder.getExpirationDate(token);
+    final remaining = expiryDate.difference(DateTime.now());
+    
+    print('📱 Dashboard token expires in: ${remaining.inMinutes} minutes');
+    
+    // If token is already expired, refresh immediately
+    if (remaining.isNegative) {
+      print('🔄 Token already expired, refreshing now...');
+      await controller.refreshAccessToken();
+    } 
+    // If token expires in less than 10 minutes, refresh now
+    else if (remaining.inMinutes < 10) {
+      print('🔄 Token expiring soon, refreshing now...');
+      await controller.refreshAccessToken();
+    }
+    
+    // Start Dashboard timer
+    if (controller.isSolveActive.value) {
+      controller.startCartTimer();
+    }
+    
+  } catch (e) {
+    print('❌ Error in Dashboard token initialization: $e');
+  }
+}
+
 Timer? _timer;
   
   bool _isRunning = false;
@@ -34,13 +113,22 @@ Timer? _timer;
   void initState() {
     super.initState();
     _startTimer();
+      controller.currentScreen.value = '/DashboardScreen';
+  controller.isSolveOpen.value = true;
+  controller.isSolveActive.value = true;
+  
+  // Start Dashboard-specific token monitoring
+  _startDashboardTokenMonitoring();
+  
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    _initializeDashboardWithRefresh();
+  });
   }
 
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  // }
 
   void _startTimer() {
     _isRunning = true;
@@ -72,10 +160,11 @@ Timer? _timer;
 void _navigateToResultPage() {
   
   Future.delayed(Duration(milliseconds: 500), () {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => Myexam()), 
-    );
+    // Navigator.pushReplacement(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => MyExam()), 
+    // );
+  Get.toNamed(Routes.MYEXAM);
   });
 }
   String _formatTime(int seconds) {
@@ -872,8 +961,11 @@ Column(
   children: [Container(
   width: 274,height: 59
  , child: TextButton(onPressed: (){
-Navigator.push(context, MaterialPageRoute(builder: (context){return Myexam();}));
-
+// Navigator.push(context, MaterialPageRoute(builder: (context){return MyExam();}));
+ setState(() {
+          
+ controller.smartSolveNavigate(Routes.MYEXAM);
+        });
  },style: TextButton.
 styleFrom(backgroundColor: Color.fromARGB(255, 6, 69, 152)
 
@@ -1151,14 +1243,14 @@ styleFrom(backgroundColor: Color.fromARGB(255, 6, 69, 152)
                             fontSize: 20,
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        _buildInfoRow('icons/location.png',
-                            '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
-                        const SizedBox(height: 12),
-                        _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
-                        const SizedBox(height: 12),
-                        _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
-                        const SizedBox(height: 12),
+                        // const SizedBox(height: 16),
+                        // _buildInfoRow('icons/location.png',
+                        //     '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
+                        // const SizedBox(height: 12),
+                        // _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
+                        // const SizedBox(height: 12),
+                        // _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
+                        // const SizedBox(height: 12),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [

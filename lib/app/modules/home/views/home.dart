@@ -4,16 +4,46 @@ import 'package:get/get.dart';
 import 'package:intl_phone_field/countries.dart';
 import 'package:my_app/app/modules/home/views/homeafterlogin.dart';
 import 'package:my_app/app/modules/home/views/settings.dart';
+import 'package:my_app/app/routes/app_pages.dart';
 import '../controllers/home_controller.dart';
 class Mainpage extends StatelessWidget {
    Mainpage({super.key});
+   
 final _maxLengthNotifier = ValueNotifier<int?>(null); 
   final TextEditingController phoneNumberController = TextEditingController();
   String? _hint;
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([
+   void signin() async {
+HomeController controller =HomeController();
+    bool success = await controller. signInWithGoogle(
+ context     // emailController.text.toString(),
+      // passwordController.text.toString(),
+    );
+
+    if (success) {
+      Get.toNamed(Routes.HOMEAFTERLOGIN);
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => Homeafterlogin
+      //   ()),
+      // );
+    } else  {
+      ScaffoldMessenger.of(context).showSnackBar(
+  SnackBar(
+    content:   AutoTranslateText(text:"wrong password or email"),
+    duration: Duration(seconds: 2),
+    action: SnackBarAction(
+      label: "Undo",
+      onPressed: () {
+    
+      },
+    ),
+  ),
+);}
+      // Fl}uttertoast.showToast(msg: "Invalid Credentials");
+    } SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]); 
     final screenWidth = MediaQuery.of(context).size.width;
@@ -445,7 +475,7 @@ mainAxisAlignment: MainAxisAlignment.start,    children: [
       height: 50,
       child: TextButton(
   onPressed:() async {
-  
+  signin();
   } ,style : ButtonStyle(
         
        side:MaterialStateProperty.all<BorderSide>(BorderSide(color:Color.fromARGB(255, 6, 69, 152) ,width: 1)) ,       shape: MaterialStateProperty
@@ -477,32 +507,32 @@ mainAxisAlignment: MainAxisAlignment.start,    children: [
 TextButton(
   onPressed: ()async{
 
- 
- try {
-              final userCredential = await controller.  signInWithGoogle();
+return signin();
+//  try {
+              // final userCredential = await controller.  signInWithGoogle();
 
-if (userCredential != null) {
-  final user = userCredential.user;
-  print("✅ Login Success:");
-  Navigator.push(context,MaterialPageRoute(builder: (context){return Homeafterlogin(); }));
-  print("Name: ${user?.displayName}");
-  print("Email: ${user?.email}");
+// if (userCredential != null) {
+//   // final user = userCredential.user;
+//   print("✅ Login Success:");
+//   Navigator.push(context,MaterialPageRoute(builder: (context){return Homeafterlogin(); }));
+//   // print("Name: ${user?.displayName}");
+//   // print("Email: ${user?.email}");
   
   
-} else {
-  print("ser cancelled sign-in");
+// } else {
+//   print("ser cancelled sign-in");
 
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Sign-in cancelled")),
-                );
-              }
-            } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Error: $e")),
-              );
-              print('eee$e');
-            }         
-
+//                 ScaffoldMessenger.of(context).showSnackBar(
+//                   const SnackBar(content: Text("Sign-in cancelled")),
+//                 );
+//               }
+            // } catch (e) {
+            //   ScaffoldMessenger.of(context).showSnackBar(
+            //     SnackBar(content: Text("Error: $e")),
+            //   );
+            //   print('eee$e');
+            // }         
+return signin();
   },style : ButtonStyle(
         padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(15)),
        side:MaterialStateProperty.all<BorderSide>(BorderSide(color:Color.fromARGB(255, 6, 69, 152) ,width: 1)) ,       shape: MaterialStateProperty

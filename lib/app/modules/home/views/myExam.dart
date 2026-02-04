@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:my_app/app/modules/home/controllers/home_controller.dart';
 import 'package:my_app/app/modules/home/controllers/trueAnswerExam.dart';
 import 'package:my_app/app/modules/home/views/lecturenotpaid.dart';
@@ -12,6 +15,8 @@ import 'package:my_app/app/modules/home/views/profile%20copy.dart';
 import 'package:my_app/app/modules/home/views/subject.dart';
 import 'package:my_app/app/modules/home/views/subjectbooks.dart';
 import 'package:my_app/app/modules/home/views/subjecttype.dart';
+import 'package:my_app/app/routes/app_pages.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'exam_solve.dart';
 import 'wallet_cart.dart';
@@ -21,14 +26,141 @@ import 'wallet_cart.dart';
 
 
 
-class Myexam extends StatefulWidget {
-  const Myexam({super.key});
+class MyExam extends StatefulWidget {
+  const MyExam({super.key});
 
   @override
-  State<Myexam> createState() => _MyexamState();
+  State<MyExam> createState() => _MyexamState();
 }
 
-class _MyexamState extends State<Myexam> {
+class _MyexamState extends State<MyExam> {
+
+HomeController controller=Get.find();
+@override
+void initState() {
+  super.initState();
+  print('Mainscreen - بدء التشغيل');
+  
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    controller.currentScreen.value = '/Mainscreen';
+    
+    controller.startTokenMonitoring();
+  });
+}
+
+@override
+void dispose() {
+  print(' Mainscreen - التخلص');
+  
+  
+  super.dispose();
+}
+
+  Future<void> _checkTokenAndAutoLogout() async {
+    print(' Mainscreen - التحقق من التوكن (بدون تجديد)');
+    
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    
+    if (token == null || token.isEmpty) {
+      print(' Mainscreen - لا يوجد توكن');
+      _autoLogout('لا يوجد توكن');
+      return;
+    }
+    
+    try {
+      final expiryDate = JwtDecoder.getExpirationDate(token);
+      final remaining = expiryDate.difference(DateTime.now());
+      
+      print(' Mainscreen - الوقت المتبقي: ${remaining.inMinutes} دقيقة و${remaining.inSeconds % 60} ثانية');
+      
+      if (remaining.isNegative || remaining.inSeconds < 30) {
+        print(' Mainscreen - التوكن منتهي أو شبه منتهي');
+        _autoLogout('التوكن منتهي الصلاحية');
+        return;
+      }
+      
+      print(' Mainscreen - لا تجديد للتوكن هنا، فقط تحقق للتسجيل الخروج');
+      
+      if (remaining.inMinutes < 2) {
+        print(' Mainscreen - التوكن سينتهي قريباً - سيتم الخروج تلقائياً');
+        
+        Get.snackbar(
+          'تحذير',
+          'التوكن سينتهي خلال ${remaining.inMinutes} دقيقة - سيتم الخروج تلقائياً',
+          duration: Duration(seconds: 5),
+          backgroundColor: Colors.orange,
+        );
+        
+        Future.delayed(Duration(minutes: 1), () {
+          if (mounted && controller.currentScreen.value == '/Mainscreen') {
+            _autoLogout('التوكن على وشك الانتهاء');
+          }
+        });
+      }
+      
+    } catch (e) {
+      print(' Mainscreen - خطأ في فحص التوكن: $e');
+      _autoLogout('خطأ في فحص التوكن');
+    }
+  }
+void _autoLogout(String reason) async {
+  print(' Mainscreen - تسجيل خروج تلقائي: $reason');
+  
+  try {
+    Get.snackbar(
+      'جلسة منتهية',
+      'تم تسجيل الخروج تلقائياً ($reason)',
+      duration: Duration(seconds: 3),
+      backgroundColor: Colors.red,
+      snackPosition: SnackPosition.TOP,
+      margin: EdgeInsets.all(20),
+      borderRadius: 10,
+    );
+    
+    await Future.delayed(Duration(seconds: 3));
+    
+    if (mounted && controller.currentScreen.value == '/Mainscreen') {
+      print('🔄 تنفيذ تسجيل الخروج...');
+      
+      await safeLogout();
+    }
+  } catch (e) {
+    print(' خطأ في _autoLogout: $e');
+    
+    try {
+      Get.offAllNamed('/mainpage');
+    } catch (e2) {
+      print(' حتى المحاولة الطارئة فشلت: $e2');
+    }
+  }
+}
+Future<void> safeLogout() async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    
+   controller. token = '';
+    controller. update();
+   controller.  stopAutoRefresh();
+    
+    await Future.delayed(Duration(milliseconds: 500));
+    
+    Get.offAllNamed(
+      '/mainpage',
+      predicate: (route) => false,
+    );
+  } catch (e) {
+    print('❌ خطأ في safeLogout: $e');
+    Get.offAllNamed('/mainpage');
+  }
+}
+  // @override
+  // Widget build(BuildContext context) {
+  //  Timer? _refreshTimer;
+
+
+
 
 
 bool isSelected=true;
@@ -59,8 +191,13 @@ var selectedMethod=''.obs;
   Widget build(BuildContext context) {
     int _currentPage=0;
   
+     Timer? _refreshTimer;
   
-          
+  void stopAutoRefresh() {
+    print('⏹️ إيقاف التجديد التلقائي');
+    _refreshTimer?.cancel();
+    _refreshTimer = null;
+  }          
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth < 900;
 
@@ -515,11 +652,17 @@ return Container( height:isMobile?325: 325,  width:isMobile?363: 215
                 onPressed: 
               
               ()async{
-                Navigator.push(context,MaterialPageRoute(builder:(context) {
-                return ExamSolve(totalSeconds:  2 * 60,);
-              },)); 
+              //   Navigator.push(context,MaterialPageRoute(builder:(context) {
+              //   return ExamSolve(totalSeconds:  2 * 60,);
+              // },)); 
             
-
+    // );
+Get.toNamed(
+  Routes.EXAMSOLVE,
+  arguments: {
+    'totalSeconds': 2 * 60,
+  },
+);
       await controller.fetchUserQuestionExam(
     id: controller.examsoffon[index].id,
     
@@ -1096,14 +1239,14 @@ Widget _buildFooter(BuildContext context) {
                           fontSize: 20,
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      _buildInfoRow('icons/location.png',
-                          '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
-                      const SizedBox(height: 12),
-                      _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
-                      const SizedBox(height: 12),
-                      _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
-                      const SizedBox(height: 12),
+                      // const SizedBox(height: 16),
+                      // _buildInfoRow('icons/location.png',
+                      //     '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
+                      // const SizedBox(height: 12),
+                      // _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
+                      // const SizedBox(height: 12),
+                      // _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
+                      // const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -1327,7 +1470,7 @@ Widget _buildPagination(HomeController controller, int currentPage,isMobile) {
           
             currentIndex = pageIndex;
             controller.fetchCodes(page: pageIndex,); 
-            controller.update();
+            // controller.update();
           
         },
         child: Container(

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_app/app/modules/home/views/homeafterlogin.dart';
@@ -7,6 +9,7 @@ import 'package:my_app/app/modules/home/views/subjectbooks.dart';
 import 'package:my_app/app/modules/home/views/lecturenotpaid.dart';
 import 'package:my_app/app/modules/home/controllers/home_controller.dart';
 import 'package:my_app/app/modules/home/views/subjecttype.dart';
+import 'package:my_app/app/routes/app_pages.dart';
 class Subjects extends StatefulWidget {
    final String courseId;
   final List<dynamic> courseInfos;
@@ -440,61 +443,135 @@ class _SubjectsState extends State<Subjects> {
     );
   }
 
-  Future<void> _handleLectureCardPress(BuildContext context,  controller, int sectionIndex,isUsed) async {
+Future<void> _handleLectureCardPress(BuildContext context, HomeController controller, int sectionIndex,isUsed) async {
+  try {
+    print('🎯 Handling lecture card press for section index: $sectionIndex');
+    
+    // Get section ID safely
+    final allSections = <dynamic>[];
+    for (var course in controller.course_info) {
+      if (course.section != null && course.section is List) {
+        allSections.addAll(course.section as List);
+      }
+    }
+    
+    if (sectionIndex >= allSections.length) {
+      print('❌ Section index out of bounds');
+      return;
+    }
+    
+    final section = allSections[sectionIndex];
+    final sectionId = section['id']?.toString();
+    final sectionName = section['name']?.toString() ?? 'Section $sectionIndex';
+    
+    print('📋 Section ID: $sectionId');
+    print('📋 Section Name: $sectionName');
+    
+    if (sectionId == null) {
+      print('❌ Section ID is null');
+      return;
+    }
+    
+    // Show loading indicator
+    Get.dialog(
+      const Center(child: CircularProgressIndicator()),
+      barrierDismissible: false,
+    );
+    
     try {
-      final allSections = <dynamic>[];
-      for (var course in controller.course_info) {
-        if (course.section != null && course.section is List) {
-          allSections.addAll(course.section as List);
-        }
+      // Fetch section data
+      await controller.fetchsectionid(sectionId);
+      
+      // Close loading dialog
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
       }
       
-      if (sectionIndex >= allSections.length) return;
-      
-      final section = allSections[sectionIndex];
-      final sectionId = section['id']?.toString();
-      
-      if (sectionId == null) return;
-      
-      await controller.fetchsectionid(sectionId);
-
+      // Process the fetched data
       String courseId = '';
       List<dynamic> lessons = [];
+      List<dynamic> exams = [];
 
+      // Extract course info and lessons from the fetched section data
       for (var sectionData in controller.section) {
         if (sectionData.section != null && sectionData.section is List) {
           for (var sec in sectionData.section as List) {
             if (sec['id']?.toString() == sectionId) {
+              print('✅ Found matching section');
+              
               if (sec['course'] != null) {
                 courseId = sec['course']['id']?.toString() ?? '';
+                print('📋 Course ID: $courseId');
               }
+              
               if (sec['lessons'] != null && sec['lessons'] is List) {
                 lessons = sec['lessons'] as List;
+                print('📋 Number of lessons: ${lessons.length}');
+              }
+              
+              if (sec['exams'] != null && sec['exams'] is List) {
+                exams = sec['exams'] as List;
+                print('📋 Number of exams: ${exams.length}');
               }
               break;
             }
           }
-        } 
+        }
       }
 
-      if (courseId.isNotEmpty) {
-            try {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-
-          return Lecturenotpaid(courseId: courseId,
-          section:sectionId, index: sectionIndex, 
-          lesson: lessons,isUsed:isUsed);
-        }));
-            } catch (e) {
-              
-            }
-    
+      if (courseId.isEmpty) {
+        print('❌ Course ID is empty');
+        Get.snackbar(
+          'Error',
+          'Could not find course information',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
       }
-    } catch (e) {
-      print('Error handling lecture card press: $e');
+
+      // Initialize player
+      await controller.initializePlayer(courseId);
+      
+      // Prepare navigation arguments
+      final arguments = {
+        'courseId': courseId,
+        'sectionId': sectionId,
+        'sectionIndex': sectionIndex,
+        'sectionName': sectionName,
+        'lessons': jsonEncode(lessons),
+        'exams': jsonEncode(exams),
+        'isUsed':isUsed
+      };
+      
+      print('🚀 Navigating to Lecturenotpaid with arguments: $arguments');
+      
+      // Navigate to Lecturenotpaid
+      await Get.toNamed(
+        Routes.LECTURENOTPAID,
+        arguments: arguments,
+      );
+      
+    }  catch (fetchError) {
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      } 
+      print('❌ Error fetching section data: $fetchError');
+      rethrow;
     }
+    
+  } catch (e, stackTrace) {
+    print('❌ Error handling lecture card press: $e');
+    print('📋 Stack trace: $stackTrace');
+    
+    Get.snackbar(
+      'Error',
+      'Failed to load section. Please try again.',
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
   }
-
+}
   
   Widget _buildFooter(BuildContext context) {
     return Container(
@@ -530,14 +607,14 @@ class _SubjectsState extends State<Subjects> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          _buildSectionTitle('تواصل معنا'),
-          const SizedBox(height: 16),
-          _buildInfoRow('icons/location.png', '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
-          const SizedBox(height: 12),
-          _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
-          const SizedBox(height: 12),
-          _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
-          const SizedBox(height: 12),
+          // _buildSectionTitle('تواصل معنا'),
+          // const SizedBox(height: 16),
+          // _buildInfoRow('icons/location.png', '26 Street 261, عزبة فهمي، قسم المعادي، محافظة القاهرة‬'),
+          // const SizedBox(height: 12),
+          // _buildInfoRow('icons/Phone.png', '+20 106 662 0129'),
+          // const SizedBox(height: 12),
+          // _buildInfoRow('icons/sms_1.png', 'support@ashtar.app'),
+          // const SizedBox(height: 12),
           _buildSocialIcons(),
           const SizedBox(height: 16),
           _buildSectionTitle('حمل التطبيق الان'),

@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -9,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:my_app/app/models/copy.dart';
 import 'package:my_app/app/models/lesson.dart';
 import 'package:my_app/app/modules/home/views/textfield.dart';
@@ -32,7 +36,7 @@ import 'package:my_app/app/models/wallet%20copy%205.dart';
 import 'package:my_app/app/models/wallet%20copy.dart';
 import 'package:my_app/app/modules/home/views/subject.dart';
 import 'package:my_app/app/modules/home/views/videofullscreen.dart';
-import 'package:my_app/app/modules/home/views/wallet.dart';
+import 'package:my_app/app/modules/home/views/Wallet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:video_player/video_player.dart';
@@ -40,10 +44,871 @@ import 'package:video_player/video_player.dart';
 import '../../../models/material.dart';
 import '../../../models/wallet copy 4.dart';
 import '../../../models/wallet.dart';
+import '../../../routes/app_pages.dart';
 import '../views/homeafterlogin.dart';
 
 class HomeController extends GetxController {
+ 
+ Timer?_logoutTimer;
+Future<void>logout() async {
+  _logoutTimer?.cancel();
+  final prefs=await SharedPreferences.getInstance();
+  await prefs.clear();
+   GoogleAuthProvider googleProvider = GoogleAuthProvider();
+
+    UserCredential userCredential = await auth.signInWithPopup(googleProvider);
+await auth.signOut();
+  Get .offAllNamed('/mainpage');
+
+}
+
+void startTokenTimer (String token){
+  _logoutTimer?.cancel();
+  final expirationDate=JwtDecoder.getExpirationDate(token);
+  final remainingTime=expirationDate.difference(DateTime.now());
+  if(remainingTime.isNegative){
+    logout();
+  }else{
+    _logoutTimer=Timer(remainingTime, logout);
+  }
+}String ?photoUrl=''; 
+  int userId=0;
+  String refreshtoken='';
+  String token=''; 
+DateTime? _lastRefreshTime;
+ Timer ?_refreshTimer;
+
+ void togglePlayPause() {
+    if (controllervideo?.value.isPlaying ?? false) {
+      controllervideo?.pause();
+    } else {
+      controllervideo?.play();
+    }
+  }
+ void togglePlayPause2() {
+    if (controllervideo2?.value.isPlaying ?? false) {
+      controllervideo2?.pause();
+    } else {
+      controllervideo2?.play();
+    }
+  }
+  // String ?photoUrl=''; 
+  // int userId=0;
+  // String refreshtoken='';
+  // String token=''; 
+
+
+// Future  post ()async{
+
+// }
+// Future 
+
+// import 'package:shared_preferences/shared_preferences.dart';
+Future<void> checkTokenAndRedirect() async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    
+    if (token == null || token.isEmpty) {
+      print('❌ No token found - Redirecting to HomeView');
+      await _redirectToHomeView();
+      return;
+    }
+    
+    final currentRoute = Get.currentRoute;
+    final isInDashboard = currentRoute.contains('Lecturenotpaid');
+    final isInSolve = currentRoute.contains('ExamSolve');
+    final isInCart= currentRoute.contains('Addedto');
+    final isInWallet = currentRoute.contains('Emptycart');
+    
+    if (JwtDecoder.isExpired(token)) {
+      print('⏰ Token expired');
+      
+      if (isInDashboard) {
+        print('📱 In Dashboard - Will try to refresh token instead of redirecting');
+        await refreshAccessToken();
+      }
+      
+     else if (isInCart) {
+        print('📱 In Dashboard - Will try to refresh token instead of redirecting');
+        await refreshAccessToken();
+      }
+     else if (isInSolve) {
+        print('📱 In Dashboard - Will try to refresh token instead of redirecting');
+        await refreshAccessToken();
+      }
+     else if (isInWallet) {
+        print('📱 In Dashboard - Will try to refresh token instead of redirecting');
+        await refreshAccessToken();
+      }
+      
+       else {
+        print('🚪 Not in Dashboard - Redirecting to HomeView');
+        await _redirectToHomeView();
+      }
+      return;
+    }
+    
+    final expiryDate = JwtDecoder.getExpirationDate(token);
+    final remaining = expiryDate.difference(DateTime.now());
+    
+    print('✅ Token valid for ${remaining.inMinutes} minutes');
+    
+    if (remaining.inSeconds < 60 && !isInDashboard) {
+      print('⚠️ Token expiring soon - Will redirect in ${remaining.inSeconds} seconds');
+      Timer(remaining, () async {
+        await _redirectToHomeView();
+      });
+    } 
+    else if (remaining.inSeconds < 60 && isInDashboard) {
+      print('📱 In Dashboard - Token expiring soon, will refresh instead of redirect');
+      // In Dashboard, we should refresh the token when it's about to expire
+      if (remaining.inSeconds < 30) {
+        await refreshAccessToken();
+      }
+    }
+    
+  } catch (e) {
+    print('❌ Error checking token: $e');
+    // Don't auto-logout from Dashboard on error
+    if (!Get.currentRoute.contains('Lecturenotpaid')) {
+      await _redirectToHomeView();
+    }
+  }
+}
+
+void startTokenMonitoring() {
+  print('🔍 Starting token monitoring...');
   
+  // Stop any existing timer
+  _logoutTimer?.cancel();
+  
+  // Check immediately
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    checkTokenAndRedirect();
+  });
+  
+  // Then check every 30 seconds
+  _logoutTimer = Timer.periodic(Duration(seconds: 30), (timer) {
+    // Don't check if we're in Dashboard - Dashboard handles its own refresh
+    if (!Get.currentRoute.contains('Lecturenotpaid')) {
+      checkTokenAndRedirect();
+    } 
+    
+   else if (!Get.currentRoute.contains('Addedto')) {
+      checkTokenAndRedirect();
+    } 
+   else if (!Get.currentRoute.contains('Emptycart')) {
+      checkTokenAndRedirect();
+    } 
+   else if (!Get.currentRoute.contains('ExamSolve')) {
+      checkTokenAndRedirect();
+    } 
+    
+    else {
+      print('📱 In Dashboard - Skipping auto-logout check (Dashboard handles refresh)');
+    }
+  });
+}  void stopAutoRefresh() {
+    _refreshTimer?.cancel();
+    _refreshTimer = null;
+  }
+  
+Future<void> _redirectToHomeView() async {
+  print(' Redirecting to mainpage...');
+  
+  _logoutTimer?.cancel();
+  _refreshTimer?.cancel();
+  
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.clear();
+  isSolveOpen.value=false;
+  isDashboardOpen.value = false;
+  isCartOpen.value = false;
+  isWalletOpen.value=false;
+  currentScreen.value = '';
+  token = '';
+  
+  if (Get.currentRoute != '/mainpage') {
+    Get.offAllNamed('/mainpage');
+  }
+  
+  print('Successfully redirected to mainpage');
+}
+
+
+void startDashboardTimer() {
+  print('بدء تايمر Dashboard');
+  isDashboardActive.value = true;
+  
+  _refreshTimer?.cancel();
+  
+  if (token.isNotEmpty && isDashboardOpen.value) {
+    scheduleNextRefresh(token);
+  }
+}
+
+void startCartTimer() {
+  print('بدء تايمر Cart');
+  isCartActive.value = true;
+  
+  _refreshTimer?.cancel();
+  
+  if (token.isNotEmpty && isCartOpen.value) {
+    scheduleNextRefresh(token);
+  }
+}
+void startExamsolveTimer() {
+  print('بدء تايمر Cart');
+  isSolveActive.value = true;
+  
+  _refreshTimer?.cancel();
+  
+  if (token.isNotEmpty && isSolveOpen.value) {
+    scheduleNextRefresh(token);
+  }
+}
+void startWalletTimer() {
+  print('بدء تايمر Cart');
+  isWalletActive.value = true;
+  
+  _refreshTimer?.cancel();
+  
+  if (token.isNotEmpty && isWalletOpen.value) {
+    scheduleNextRefresh(token);
+  }
+}
+Future<void> checkDashboardToken() async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    
+    if (token == null || token.isEmpty) {
+      print('❌ No token in Dashboard');
+      return;
+    }
+    
+    if (JwtDecoder.isExpired(token)) {
+      print('🔄 Dashboard: Token expired, refreshing...');
+      await refreshAccessToken();
+    } else {
+      final expiryDate = JwtDecoder.getExpirationDate(token);
+      final remaining = expiryDate.difference(DateTime.now());
+      
+      // If token expires in less than 5 minutes, refresh it
+      if (remaining.inMinutes < 5) {
+        print('🔄 Dashboard: Token expiring soon (${remaining.inMinutes} min), refreshing...');
+        await refreshAccessToken();
+      }
+    }
+  } catch (e) {
+    print('❌ Error in Dashboard token check: $e');
+  }
+}
+void scheduleNextRefresh(String token) {
+  _refreshTimer?.cancel();
+  
+  if (!isDashboardActive.value) {
+    print('⏸ Dashboard غير نشط - لا أجدد تلقائياً');
+    return;
+  }
+ else if (!isCartActive.value) {
+    print('⏸ Cart غير نشط - لا أجدد تلقائياً');
+    return;
+  }
+ else if (!isWalletActive.value) {
+    print('⏸ Wallet غير نشط - لا أجدد تلقائياً');
+    return;
+  }
+  
+ else if (!isSolveActive.value) {
+    print('⏸ Wallet غير نشط - لا أجدد تلقائياً');
+    return;
+  }
+  
+  try {
+    final expiryDate = JwtDecoder.getExpirationDate(token);
+    final remaining = expiryDate.difference(DateTime.now());
+    
+    print(' صلاحية التوكن: ${remaining.inMinutes} دقيقة و${remaining.inSeconds % 60} ثانية');
+    
+    final refreshTime = remaining - Duration(minutes: 10);
+    
+    if (refreshTime.isNegative) {
+      print('⏱ بقي أقل من 10 دقائق - جدد بعد دقيقة');
+      _refreshTimer = Timer(Duration(minutes: 1), () {
+        if (isDashboardActive.value) {
+          smartRefreshToken();
+        }
+        else if (isCartActive.value) {
+          smartRefreshToken();
+        }
+        else if (isWalletActive.value) {
+          smartRefreshToken();
+        }
+        else if (isSolveActive.value) {
+          smartRefreshToken();
+        }
+      });
+    } else {
+      print('سأجدد بعد ${refreshTime.inMinutes} دقيقة');
+      _refreshTimer = Timer(refreshTime, () {
+        if (isDashboardActive.value) {
+          smartRefreshToken();
+        }
+       else if (isCartActive.value) {
+          smartRefreshToken();
+        }
+       else if (isWalletActive.value) {
+          smartRefreshToken();
+        }
+       else if (isSolveActive.value) {
+          smartRefreshToken();
+        }
+      });
+    }
+    
+  } catch (e) {
+    print(' خطأ في scheduleNextRefresh: $e');
+  }
+}
+Future<void> smartRefreshToken()  async {
+ 
+  try {
+    print(' smartRefreshToken - بدء');
+    
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    
+    if (token == null || token.isEmpty) {
+      print(' لا يوجد توكن');
+      return;
+    }
+    
+    final expiryDate = JwtDecoder.getExpirationDate(token);
+    final remaining = expiryDate.difference(DateTime.now());
+    
+    print(' الوقت المتبقي: ${remaining.inMinutes} دقيقة و${remaining.inSeconds % 60} ثانية');
+    print(' الصفحة الحالية: ${currentScreen.value}');
+    print(' في Dashboard: ${isDashboardOpen.value}');
+    print(' في cart: ${isCartOpen.value}');
+    print(' في wallet: ${isWalletOpen.value}');
+    print(' في solve: ${isSolveOpen.value}');
+    
+    if (currentScreen.value.contains('Lecturenotpaid') || isDashboardOpen.value) {
+      print(' في Dashboard - تحقق من الحاجة للتجديد');
+      
+      if (remaining.isNegative) {
+        print(' التوكن منتهي - جدد فوراً');
+        await refreshAccessToken();
+      }
+       else if (remaining.inMinutes < 10) {
+        print(' بقي أقل من 10 دقائق - جدد التوكن');
+        await refreshAccessToken();
+      } else {
+        print(' التوكن ساري لوقت كافي في Dashboard');
+      }
+    } 
+   else if (currentScreen.value.contains('Addedto') || isCartOpen.value) {
+      print(' في Addedto - تحقق من الحاجة للتجديد');
+      
+      if (remaining.isNegative) {
+        print(' التوكن منتهي - جدد فوراً');
+        await refreshAccessToken();
+      }
+       else if (remaining.inMinutes < 10) {
+        print(' بقي أقل من 10 دقائق - جدد التوكن');
+        await refreshAccessToken();
+      } else {
+        print(' التوكن ساري لوقت كافي في Addedto');
+      }
+    } 
+    
+   else if (currentScreen.value.contains('Emptycart') || isWalletOpen.value) {
+      print(' في Emptycart - تحقق من الحاجة للتجديد');
+      
+      if (remaining.isNegative) {
+        print(' التوكن منتهي - جدد فوراً');
+        await refreshAccessToken();
+      }
+       else if (remaining.inMinutes < 10) {
+        print(' بقي أقل من 10 دقائق - جدد التوكن');
+        await refreshAccessToken();
+      } else {
+        print(' التوكن ساري لوقت كافي في Emptycart');
+      }
+    } 
+   else if (currentScreen.value.contains('ExamSolve') || isSolveOpen.value) {
+      print(' في Emptycart - تحقق من الحاجة للتجديد');
+      
+      if (remaining.isNegative) {
+        print(' التوكن منتهي - جدد فوراً');
+        await refreshAccessToken();
+      }
+       else if (remaining.inMinutes < 10) {
+        print(' بقي أقل من 10 دقائق - جدد التوكن');
+        await refreshAccessToken();
+      } else {
+        print(' التوكن ساري لوقت كافي في Emptycart');
+      }
+    } 
+    
+    
+    else {
+      print(' في صفحة أخرى - لا تجدد، فقط تحقق للتسجيل الخروج');
+      
+      if (remaining.isNegative || remaining.inSeconds < 30) {
+        print(' التوكن منتهي أو شبه منتهي - تسجيل خروج');
+        await logout();
+      } else {
+        print(' التوكن ساري في الصفحة الأخرى - لا تجديد');
+      }
+    }
+    
+  } catch (e) {
+    print(' خطأ في smartRefreshToken: $e');
+  }
+}
+
+  Future<void> loadTokens() async {
+    final prefs = await SharedPreferences.getInstance();
+    token = prefs.getString('token') ?? '';
+    refreshtoken = prefs.getString('refreshtoken') ?? '';
+    userId = prefs.getInt('userId') ?? 0;
+    
+    if (token.isNotEmpty) {
+      print(' تم تحميل التوكن - ${token.substring(0, 20)}...');
+      
+      // إذا كنا في Dashboard، ابدأ التجديد التلقائي
+      if (Get.currentRoute.contains('Lecturenotpaid')) {
+        isDashboardOpen.value = true;
+        scheduleNextRefresh(token);
+      }
+      if (Get.currentRoute.contains('ExamSolve')) {
+        isSolveOpen.value = true;
+        scheduleNextRefresh(token);
+      }
+   else   if (Get.currentRoute.contains('Addedto')) {
+        isCartOpen.value = true;
+        scheduleNextRefresh(token);
+      }
+   else   if (Get.currentRoute.contains('Emptycart')) {
+        isWalletOpen.value = true;
+        scheduleNextRefresh(token);
+      }
+    }
+  }
+
+
+// Future<String> refreshAccessToken() async {
+//   final tokens = await getTokens();
+//   if (tokens == null) return '/mainpage';
+
+//   final accessToken = tokens['token'];
+//   final refreshtoken = tokens['refreshtoken'];
+
+//   if (JwtDecoder.isExpired(accessToken)) {
+//     try {
+//       final res = await Dio().post(
+//         'http://localhost:4000/auth/refresh',
+//         data: {'refreshtoken': refreshtoken},
+//       );
+//       await saveTokens(res.data['token'], refreshtoken, tokens['userId']);
+//       return '/Lecturenotpaid';
+//     } catch (_) {
+//       return '/mainpage';
+//     }
+//   } else {
+//     return '/Lecturenotpaid';
+//   }
+// }
+
+// Timer?_logoutTimer;
+// void startTokenTimer (String token){
+//   _logoutTimer?.cancel();
+//   final expirationDate=JwtDecoder.getExpirationDate(token);
+//   final remainingTime=expirationDate.difference(DateTime.now());
+//   if(remainingTime.isNegative){
+//     logout();
+//   }else{
+//     _logoutTimer=Timer(remainingTime, logout);
+//   }
+// }
+// Future<void>logout() async {
+//   _logoutTimer?.cancel();
+//   final prefs=await SharedPreferences.getInstance();
+//   await prefs.clear();
+//    GoogleAuthProvider googleProvider = GoogleAuthProvider();
+
+//     UserCredential userCredential = await auth.signInWithPopup(googleProvider);
+// await auth.signOut();
+//   Get .offAllNamed('/mainpage');
+
+// }
+
+// final FirebaseAuth auth=FirebaseAuth.instance;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Future<void> saveTokens(String accessToken, String refreshtoken, int userId) async {
+//   final prefs = await SharedPreferences.getInstance();
+//   await prefs.setString('token', accessToken);
+//   await prefs.setString('refreshtoken', refreshtoken);
+//   await prefs.setInt('userId', userId);
+// }
+
+
+// Future<Map<String, dynamic>?> getTokens() async {
+//   final prefs = await SharedPreferences.getInstance();
+//   final accessToken = prefs.getString('token');
+//   final refreshtoken = prefs.getString('refreshtoken');
+//   final userId = prefs.getInt('userId');
+//   if (accessToken != null && refreshtoken != null && userId != null) {
+//     return {
+//       'token': accessToken,
+//       'refreshtoken': refreshtoken,
+//       'userId': userId,
+//     };
+//   }
+//   return null;
+// }
+  // String refreshToken = '';
+// int userId=0;
+
+ 
+   final FirebaseAuth auth = FirebaseAuth.instance;
+   final GoogleSignIn _googleSignIn = GoogleSignIn();
+ Future<bool> signInWithGoogle(context) async {
+  try {
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+    if (googleUser == null) return false;
+
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    final userCredential = await _auth.signInWithCredential(credential);
+    final user = userCredential.user;
+
+    final firebaseIdToken = await user?.getIdToken();
+    debugPrint('✅ Firebase ID Token: $firebaseIdToken');
+
+    final response = await http.post(
+      Uri.parse('${Applinks.baseurl}/auth/google-login/students'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'idToken': firebaseIdToken}),
+    );
+
+    if (response.statusCode == 200||response.statusCode == 201) {
+      final responseBody = jsonDecode(response.body);
+      print("🎉 Logged in successfully: ${responseBody['token']}");
+    
+      final data = jsonDecode(response.body);
+      // final prefs = await SharedPreferences.getInstance();
+        final token = data['token'];
+    final refreshToken = data['refreshtoken'];
+    final userId = data['userId'];
+
+   await saveTokens(token, refreshToken, userId);
+        scheduleNextRefresh(data['token']);
+
+// final authController = Get.put(AuthController());
+// startTokenTimer(token);
+ Get.toNamed(Routes.HOMEAFTERLOGIN);
+
+    return true;
+    
+    // refreshtoken=data['refreshtoken'];  
+    // token=data['token'];  
+    // userId=data['userId'];
+      
+    //   await prefs.setString('token', data['token']);
+    //   await prefs.setString('refreshtoken', data['refreshtoken']);
+      // await prefs.setString('userId', data['userId']);
+      return true;
+    
+    
+    } else {
+      print("❌ Server error: ${response.statusCode}");
+      return false;
+    }
+  } catch (e) {
+    print("❌ Sign-in error: $e");
+    return false;
+  }
+}
+//   Future<bool> signInWithGoogle(context) async {
+//   try {
+    
+    // GoogleAuthProvider googleProvider = GoogleAuthProvider();
+
+    // UserCredential userCredential = await auth.signInWithPopup(googleProvider);
+
+    // String? idToken = await userCredential.user?.getIdToken();
+    // print("✅ ID Token: $idToken");
+
+    // final response = await http.post(
+    //   Uri.parse('http://localhost:4000/auth/google-login/students'), 
+    //   headers: {'Content-Type': 'application/json'},
+    //   body: jsonEncode({'idToken': idToken}),
+    // );
+
+    // if (response.statusCode == 200||response.statusCode==201)  {
+//       final responseBody = jsonDecode(response.body);
+//       print("🎉 Logged in successfully: ${responseBody['token']}");
+    
+//       final data = jsonDecode(response.body);
+//       final prefs = await SharedPreferences.getInstance();
+//         final token = data['token'];
+//     final refreshToken = data['refreshtoken'];
+//     final userId = data['userId'];
+
+//    await saveTokens(token, refreshToken, userId);
+
+// // final authController = Get.put(AuthController());
+// startTokenTimer(token);
+
+// Get.offNamed(Routes.HOMEAFTERLOGIN);
+
+//     return true;
+    
+//     // refreshtoken=data['refreshtoken'];  
+//     // token=data['token'];  
+//     // userId=data['userId'];
+      
+//     //   await prefs.setString('token', data['token']);
+//     //   await prefs.setString('refreshtoken', data['refreshtoken']);
+//       // await prefs.setString('userId', data['userId']);
+//       return true;
+    
+    
+//     } else {
+//       print("❌ Server error: ${response.statusCode}");
+//       return false;
+//     }
+//   } catch (e) {
+//     print("❌ Sign-in error: $e");
+//     return false;
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// في HomeController.dart
+Future<void> checkCartToken() async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    
+    if (token == null || token.isEmpty) {
+      print('❌ No token in Cart');
+      return;
+    }
+    
+    if (JwtDecoder.isExpired(token)) {
+      print('🔄 Cart: Token expired, refreshing...');
+      await refreshAccessToken();
+    } else {
+      final expiryDate = JwtDecoder.getExpirationDate(token);
+      final remaining = expiryDate.difference(DateTime.now());
+      
+      // If token expires in less than 5 minutes, refresh it
+      if (remaining.inMinutes < 5) {
+        print('🔄 Cart: Token expiring soon (${remaining.inMinutes} min), refreshing...');
+        await refreshAccessToken();
+      }
+    }
+  } catch (e) {
+    print('❌ Error in Cart token check: $e');
+  }
+}
+// في HomeController.dart
+Future<void> checkSolveToken() async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    
+    if (token == null || token.isEmpty) {
+      print('❌ No token in Cart');
+      return;
+    }
+    
+    if (JwtDecoder.isExpired(token)) {
+      print('🔄 Cart: Token expired, refreshing...');
+      await refreshAccessToken();
+    } else {
+      final expiryDate = JwtDecoder.getExpirationDate(token);
+      final remaining = expiryDate.difference(DateTime.now());
+      
+      // If token expires in less than 5 minutes, refresh it
+      if (remaining.inMinutes < 5) {
+        print('🔄 Cart: Token expiring soon (${remaining.inMinutes} min), refreshing...');
+        await refreshAccessToken();
+      }
+    }
+  } catch (e) {
+    print('❌ Error in Cart token check: $e');
+  }
+}
+
+void startCartAutoRefresh() {
+  print('🔄 بدء التحديث التلقائي لـ Cart');
+  isCartActive.value = true;
+  _refreshTimer?.cancel();
+  scheduleNextRefresh(token);
+}
+void startSolveAutoRefresh() {
+  print('🔄 بدء التحديث التلقائي لـ solve');
+  isSolveActive.value = true;
+  _refreshTimer?.cancel();
+  scheduleNextRefresh(token);
+}
+void startWalletAutoRefresh() {
+  print('🔄 بدء التحديث التلقائي لـ wallet');
+  isWalletActive.value = true;
+  _refreshTimer?.cancel();
+  scheduleNextRefresh(token);
+}
+
+
+
+  Future refreshAccessToken() async {
+  try {
+    print(' تجديد التوكن...');
+    
+    if (_lastRefreshTime != null) {
+      final timeSinceLastRefresh = DateTime.now().difference(_lastRefreshTime!);
+      if (timeSinceLastRefresh.inSeconds < 30) {
+        print('⏸️ تم التجديد مؤخراً - تأجيل');
+        
+        final waitTime = Duration(seconds: 30) - timeSinceLastRefresh;
+        _refreshTimer?.cancel();
+        _refreshTimer = Timer(waitTime, () {
+          refreshAccessToken();
+        });
+        return;
+      }
+    }
+    
+    if (refreshtoken.isEmpty) {
+      print(' لا يوجد refresh token');
+      throw Exception('No refresh token');
+    }
+    
+    final res = await Dio().post(
+      '${Applinks.baseurl}/auth/refresh',
+      data: {'refreshtoken': refreshtoken},
+    );
+
+    if (res.statusCode == 200 || res.statusCode == 201) {
+      await saveTokens(res.data['token'], refreshtoken, userId);
+      _lastRefreshTime = DateTime.now(); 
+      update();
+      print(' تم تجديد التوكن بنجاح - ${_lastRefreshTime}');
+
+      scheduleNextRefresh(res.data['token']);
+    } else {
+      print(' فشل تجديد التوكن: ${res.statusCode}');
+      throw Exception('Failed to refresh');
+    }
+    
+  } catch (e) {
+    print(' خطأ في تجديد التوكن: $e');
+    
+    final retryDelay = Duration(minutes: 1 + Random().nextInt(4));
+    print(' سأحاول مرة أخرى بعد ${retryDelay.inMinutes} دقيقة');
+    
+    _refreshTimer?.cancel();
+    _refreshTimer = Timer(retryDelay, () {
+      refreshAccessToken();
+    });
+    
+    rethrow;
+  }
+}
+ 
+   Future<String> getInitialRoute() async {
+    final tokens = await getTokens();
+    if (tokens == null) return '/mainpage';
+
+    if (JwtDecoder.isExpired(tokens['token'])) {
+      try {
+        await refreshAccessToken();
+        return '/Homeafterlogin';
+      } catch (_) {
+        return '/mainpage';
+      }
+    }
+    
+    return '/Homeafterlogin';
+  }
+
+
+
+  Future<void> saveTokens(String accessToken, String refreshtoken, int userId) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('token', accessToken);
+  await prefs.setString('refreshtoken', refreshtoken);
+  await prefs.setInt('userId', userId);
+}
+
+
+Future<Map<String, dynamic>?> getTokens() async {
+  final prefs = await SharedPreferences.getInstance();
+  final accessToken = prefs.getString('token');
+  final refreshtoken = prefs.getString('refreshtoken');
+  final userId = prefs.getInt('userId');
+  if (accessToken != null && refreshtoken != null && userId != null) {
+    return {
+      'token': accessToken,
+      'refreshtoken': refreshtoken,
+      'userId': userId,
+    };
+  }
+  return null;
+}
 RxDouble progressPercent = 0.0.obs;
   RxSet<String> completedActivities = <String>{}.obs;
   
@@ -188,7 +1053,7 @@ final ScrollController scrollController = ScrollController();
  VideoPlayerController ?controllervideo;
  
 String getBaseUrl() {
-  if (kIsWeb) return 'http://localhost:3000';
+  if (kIsWeb) return '${Applinks.baseurl}';
   if (Platform.isAndroid) return '${Applinks.baseurl}';
   return '${Applinks.baseurl}';
 }
@@ -451,7 +1316,18 @@ double percentage=0;
 // ScrollController scrollController=ScrollController();
  @override
   void dispose() {
-    
+    scrollController.dispose();
+    scrollPosition.dispose();
+    super.dispose();
+    scrollController.dispose();
+
+    controllervideo!.dispose();
+    controllervideo2!.dispose();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown
+    ]);
+  
       controllervideo2?.dispose();
     scrollController.dispose();
     scrollPosition.dispose();
@@ -464,7 +1340,185 @@ double percentage=0;
       DeviceOrientation.portraitDown
     ]);
   }
+   RxBool isDashboardOpen=false.obs;
+   RxBool isSolveOpen=false.obs;
+  RxBool isCartOpen=false.obs;
+  RxBool isWalletOpen=false.obs;
+  RxBool isDashboardActive=false.obs;
+RxString currentScreen='mainpage'.obs;
+RxBool isExamActive=false.obs;
+RxBool isCartActive=false.obs;
+RxBool isSolveActive=false.obs;
+RxBool isWalletActive=false.obs;
+void stopDashboardTimer() {
+  print('إيقاف تايمر Dashboard');
+  isDashboardActive.value = false;
+  _refreshTimer?.cancel();
+}
+// void stopExamatimer(){
+//   print('ايقاف تايمر Exam');
+// isExamActive.value=false;
+// _refreshTimer?.cancel();
+// }
+void stopCarttimer(){
+  print('ايقاف تايمر Exam');
+isCartActive.value=false;
+_refreshTimer?.cancel();update();
+}
+void stopWallettimer(){
+  print('ايقاف تايمر Exam');
+isWalletActive.value=false;
+_refreshTimer?.cancel();update();
+}
 
+void stopSolvetimer(){
+  print('ايقاف تايمر ExamSolve');
+isSolveActive.value=false;
+_refreshTimer?.cancel();update();
+}
+Future<void> smartNavigate(String routeName, ) async {
+  try {
+    print('🧭 Navigating to: $routeName from ${Get.currentRoute}');
+    
+    // If leaving Lecturenotpaid
+    if (Get.currentRoute.contains('Lecturenotpaid') && !routeName.contains('Lecturenotpaid')) {
+      print('🏃 Leaving Lecturenotpaid - stopping timers');
+      isDashboardActive.value = false;
+      stopDashboardTimer();
+    }
+    
+    // Update current screen
+    currentScreen.value = routeName;
+    
+    // If going to Lecturenotpaid, set flags
+    if (routeName.contains('Lecturenotpaid')) {
+      isDashboardOpen.value = true;
+      isDashboardActive.value = true;
+    } else {
+      isDashboardOpen.value = false;
+    }
+    
+    print('🚀 Using offAndToNamed');
+    
+    Get.toNamed(routeName, );
+    
+    print('✅ Navigation completed');
+  } catch (e) {
+    print('❌ Navigation error: $e');
+    
+    Get.toNamed(routeName, );
+  }
+}
+Future<void> smartcartNavigate(String routeName) async {
+  try {
+    print('🧭 Navigating to: $routeName from ${Get.currentRoute}');
+    
+    // If leaving Dashboard, stop Dashboard timers
+    if (Get.currentRoute.contains('Addedto') && !routeName.contains('Addedto')) {
+      print('🏃 Leaving Dashboard - stopping Dashboard timers');
+      isDashboardActive.value = false;
+      stopDashboardTimer();
+    }
+    
+    // Update current screen
+    currentScreen.value = routeName;
+    
+    // If going to Dashboard, set flags and start timers
+    if (routeName.contains('Addedto')) {
+      isDashboardOpen.value = true;
+      isDashboardActive.value = true;
+    } else {
+      isDashboardOpen.value = false;
+    }
+    
+    print('🚀 Using offAndToNamed');
+    Get.offAndToNamed(routeName);
+    
+    print('✅ Navigation completed');
+    
+  } catch (e) {
+    print('❌ Navigation error: $e');
+    Get.offAndToNamed(routeName);
+  }
+}
+
+Future<void> smartWalletNavigate(String routeName, {Map<String, dynamic>? arguments}) async {
+  try {
+    print('🧭 Navigating to: $routeName from ${Get.currentRoute}');
+    
+    if (Get.currentRoute.contains('Emptycart') && !routeName.contains('Emptycart')) {
+      print('🏃 Leaving Addedto - stopping timers');
+      isWalletActive.value = false;
+      stopWallettimer();
+    }
+    
+    currentScreen.value = routeName;
+    
+    if (routeName.contains('Emptycart')) {
+      isWalletOpen.value = true;
+      isWalletActive.value = true;
+    } else {
+      isWalletOpen.value = false;
+    }
+    
+    print('🚀 Using offAndToNamed');
+    
+    // Pass arguments directly, don't wrap in {}
+    Get.toNamed(routeName, arguments: arguments);
+    
+    print('✅ Navigation completed');
+  } catch (e) {
+    print('❌ Navigation error: $e');
+    
+    // Fallback navigation
+    Get.toNamed(routeName, arguments: arguments);
+  }
+}
+Future<void> smartSolveNavigate(String routeName, {Map<String, dynamic>? arguments}) async {
+  try {
+    print('🧭 Navigating to: $routeName from ${Get.currentRoute}');
+    
+    if (Get.currentRoute.contains('Examsolve') && !routeName.contains('Examsolve')) {
+      print('🏃 Leaving Addedto - stopping timers');
+      isSolveActive.value = false;
+      stopSolvetimer();
+    }
+    
+    currentScreen.value = routeName;
+    
+    if (routeName.contains('Examsolve')) {
+      isSolveOpen.value = true;
+      isSolveActive.value = true;
+    } else {
+      isSolveOpen.value = false;
+    }
+    
+    print('🚀 Using offAndToNamed');
+    
+    // Pass arguments directly, don't wrap in {}
+    Get.toNamed(routeName, arguments: arguments);
+    
+    print('✅ Navigation completed');
+  } catch (e) {
+    print('❌ Navigation error: $e');
+    
+    // Fallback navigation
+    Get.toNamed(routeName, arguments: arguments);
+  }
+}
+
+//    getToken()async{
+//   try {
+//     var prefs=await SharedPreferences.getInstance();
+//     prefs.getString('token'); 
+//   } catch (e) {
+//     // print(e);
+//   }
+// }
+ Future<bool> isLoggedIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token') != null ||prefs.getString('accessToken') != null;
+  }
 Student student=Student();
   Future<void> fetchstudent() async {
   try {
@@ -538,7 +1592,19 @@ Userquestions question=Userquestions();
   int totalSeconds = 2 * 60;
   void onInit() {
 // fetchCodes();
-
+    loadTokens();
+     fetchCart();
+    Future.delayed(Duration(seconds: 2), () {
+      if (token.isNotEmpty) {
+        fetchQuestions();
+        // fetchAssignments();
+      }
+    });
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      currentScreen.value = Get.currentRoute;
+      print(' الصفحة الحالية الأولية: ${currentScreen.value}');
+    });
     _loadProgress();
 unusedattachments() ;
 fetchmaterial();
@@ -2291,25 +3357,25 @@ Future<void> sectionidlessontype({String? title,String ?sectionId}) async {
     
 
 
- void togglePlayPause() {
-    if (controllervideo?.value.isPlaying ?? false) {
-      controllervideo?.pause();
-    } else {
-      controllervideo?.play();
-    }
-  }
- void togglePlayPause2() {
-    if (controllervideo2?.value.isPlaying ?? false) {
-      controllervideo2?.pause();
-    } else {
-      controllervideo2?.play();
-    }
-  }
+//  void togglePlayPause() {
+//     if (controllervideo?.value.isPlaying ?? false) {
+//       controllervideo?.pause();
+//     } else {
+//       controllervideo?.play();
+//     }
+//   }
+//  void togglePlayPause2() {
+//     if (controllervideo2?.value.isPlaying ?? false) {
+//       controllervideo2?.pause();
+//     } else {
+//       controllervideo2?.play();
+//     }
+//   }
 Future<void> signOut() async {
   await _auth.signOut();
 }
- String ?photoUrl='';  
-   final FirebaseAuth auth = FirebaseAuth.instance;
+//  String ?photoUrl='';  
+   final FirebaseAuth _auth = FirebaseAuth.instance;
 
 
 
@@ -2374,49 +3440,49 @@ Future<void> signOut() async {
 
 
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
-final GoogleSignIn _googleSignIn = GoogleSignIn();
+// final FirebaseAuth _auth = FirebaseAuth.instance;
+// final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-Future<UserCredential?> signInWithGoogle() async {
-  try {
-    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-    if (googleUser == null) return null;
+// Future<UserCredential?> signInWithGoogle() async {
+//   try {
+//     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+//     if (googleUser == null) return null;
 
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+//     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
+//     final credential = GoogleAuthProvider.credential(
+//       accessToken: googleAuth.accessToken,
+//       idToken: googleAuth.idToken,
+//     );
 
-    final userCredential = await _auth.signInWithCredential(credential);
-    final user = userCredential.user;
+//     final userCredential = await _auth.signInWithCredential(credential);
+//     final user = userCredential.user;
 
-    final firebaseIdToken = await user?.getIdToken();
-    debugPrint('✅ Firebase ID Token: $firebaseIdToken');
+//     final firebaseIdToken = await user?.getIdToken();
+//     debugPrint('✅ Firebase ID Token: $firebaseIdToken');
 
-    final response = await http.post(
-      Uri.parse('${Applinks.baseurl}/auth/google-login/students'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'idToken': firebaseIdToken}),
-    );
+//     final response = await http.post(
+//       Uri.parse('${Applinks.baseurl}/auth/google-login/students'),
+//       headers: {'Content-Type': 'application/json'},
+//       body: jsonEncode({'idToken': firebaseIdToken}),
+//     );
 
-    if (response.statusCode == 200||response.statusCode == 201) {
-     final data = jsonDecode(response.body);
-      final prefs = await SharedPreferences.getInstance();
+//     if (response.statusCode == 200||response.statusCode == 201) {
+//      final data = jsonDecode(response.body);
+//       final prefs = await SharedPreferences.getInstance();
       
-      await prefs.setString('token', data['token']);
-      debugPrint('✅ Token saved: ${data['token']}');
-    } else {
-      debugPrint('❌ Server error: ${response.statusCode}');
-    }
+//       await prefs.setString('token', data['token']);
+//       debugPrint('✅ Token saved: ${data['token']}');
+//     } else {
+//       debugPrint('❌ Server error: ${response.statusCode}');
+//     }
 
-    return userCredential;
-  } catch (e) {
-    debugPrint('❌ Sign-in error: $e');
-    return null;
-  }
-}
+//     return userCredential;
+//   } catch (e) {
+//     debugPrint('❌ Sign-in error: $e');
+//     return null;
+//   }
+// }
  
 
   // ExamResultController(this.service);
